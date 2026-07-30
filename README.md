@@ -4,6 +4,8 @@ A zero-setup Python learning experience that combines concise instruction, guide
 
 PyQuest is designed as a focused demonstration of interactive technical education: learners move from an explanation of Python logic to short knowledge checks, then solve CS50P-style exercises against automated test cases.
 
+**[Open the live learning experience](https://ali-kin4.github.io/py-quest-interactive-tutor/)**
+
 ## What it demonstrates
 
 - **Python in the browser:** Pyodide executes learner code without a local Python installation.
