@@ -48,4 +48,4 @@ Released under the [MIT License](LICENSE).
 
 ## Author
 
-Built by [Ali Jabbary](https://alijabbary.com), a licensed Professional Engineer creating practical AI, scientific-computing, and technical-learning systems.
+Built by [Ali Jabbary](https://alijabbary.com), who creates practical AI, scientific-computing, and technical-learning systems.
