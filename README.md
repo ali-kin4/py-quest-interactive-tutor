@@ -1,51 +1,84 @@
-# PyQuest Interactive Tutor
+# PyQuest Academy
 
-A zero-setup Python learning experience that combines concise instruction, guided checks, and executable coding challenges in the browser.
+**Learn Python by building useful things.** PyQuest is a no-account, browser-based learning academy and a live demonstration of practical technical instruction by [Ali Jabbary](https://alijabbary.com).
 
-PyQuest is designed as a focused demonstration of interactive technical education: learners move from an explanation of Python logic to short knowledge checks, then solve CS50P-style exercises against automated test cases.
+**Live site:** https://ali-kin4.github.io/py-quest-interactive-tutor/
 
-**[Open the live learning experience](https://ali-kin4.github.io/py-quest-interactive-tutor/)**
+The academy is designed around a complete learning loop: **understand → see an example → answer a knowledge check → write Python → inspect test feedback → demonstrate progress**. Lessons use authentic business and technical scenarios rather than isolated syntax drills.
 
-## What it demonstrates
+## Experience
 
-- **Python in the browser:** Pyodide executes learner code without a local Python installation.
-- **Immediate feedback:** submitted solutions are evaluated against structured test cases.
-- **Progressive learning:** lesson, quiz, and coding stages move from understanding to application.
-- **Five practice problems:** exercises cover input handling, branching, pattern matching, functions, and time conversion.
-- **Responsive interface:** the single-page experience works across desktop and mobile layouts.
-- **No backend required:** the project is a static HTML application and can be hosted on any static site service.
+- **Professional academy interface:** Responsive learning dashboard, lesson catalogue, coding studio, progress overview, and instructor showcase.
+- **12 hands-on lessons, 3 connected learning paths:** Python foundations; practical Python; data and automation.
+- **Runnable Python in the browser:** Pyodide executes code in a Web Worker after a lazy first load.
+- **Transparent feedback:** Every challenge declares example input/output cases. The result shows which passed, what was expected, and what ran.
+- **Safe interruption / recovery:** Stop button and per-run execution timeout terminate the worker to recover the interface from long-running code. **This is not a security sandbox.**
+- **Local-first progress:** Completed challenges, quiz results, and editable code are saved in your browser. Import/export your progress as JSON.
+- **Practical capstone:** Build a validated revenue summary from transactions and invalid records.
+- **Keyboard and mobile support:** Accessible navigation, focus indicators, reduced-motion support, responsive layouts, and Ctrl/Cmd+Enter execution.
 
-## Try it locally
+### Paths and outcomes
 
-Clone the repository and serve the folder with any static web server:
+| Path | Lessons | Practical outcomes |
+| --- | --- | --- |
+| Python Foundations | Variables, strings, decisions, loops | Invoices, text cleanup, tiered discounts, sales totals |
+| Practical Python | Functions, collections, validation, transformations | Tax calculators, ticket summaries, data validation, transaction cleanup |
+| Data & Automation | KPI calculation, quality checks, triage automation, capstone | Business metrics, sensor quality, support routing, validated revenue reporting |
 
-```bash
-git clone https://github.com/ali-kin4/py-quest-interactive-tutor.git
-cd py-quest-interactive-tutor
+**Assessment scope:** The checks are visible, client-side demonstration tests—not secret graders, proctored assessments, or certifications. Passing them provides feedback about the given cases, not a proof that code is correct for every possible input.
+
+## Run locally
+
+Prerequisites: A modern browser and a lightweight local HTTP server. GitHub Pages needs no build process.
+
+From a local checkout:
+
+~~~bash
 python -m http.server 8000
-```
+~~~
 
-Then open `http://localhost:8000`.
+Open http://localhost:8000. On first test run, your browser downloads Pyodide from a pinned jsDelivr URL. An internet connection is therefore required initially. UI and lessons do not require a Python installation.
 
-The page loads Pyodide and its interface dependencies from public CDNs, so an internet connection is required on first load.
+Run the built-in structural and curriculum quality checks:
 
-## Technical design
+~~~bash
+npm run check
+~~~
 
-The project intentionally keeps deployment simple:
+Node.js 20+ is required for checks only, not the public site.
 
-- `index.html` contains the interface, lesson content, application state, and grading logic.
-- Pyodide provides the Python runtime inside the browser.
-- Test execution captures standard input and output, compares results with expected values, and returns per-case feedback.
-- Tailwind CSS, Font Awesome, Google Fonts, and Three.js support the visual experience.
+## Architecture
 
-## Educational scope
+~~~text
+index.html                   static app shell and semantic content regions
+src/styles.css               responsive design system
+src/app.mjs                  routes, UI rendering, browser persistence, worker lifecycle
+src/curriculum.mjs           reviewed lessons, quizzes, input/output test cases
+src/python-worker.mjs        Pyodide execution and captured test results
+tests/curriculum.test.mjs    schema, lesson coverage and application integrity checks
+docs/LESSON_AUTHORING.md    standards for adding and validating lessons
+.github/workflows/ci.yml    continuous checks for changes and pull requests
+~~~
 
-The current module focuses on Python conditional logic and related CS50P practice. It is a compact learning prototype rather than a complete course or a replacement for the official CS50P materials.
+The site is intentionally simple: **no paid APIs, account creation, database, vendor lock-in, or deployment secrets**. Python evaluation and progress processing occur client-side. It uses remote font and Pyodide CDN assets.
 
-## License
+### Limits and safety
 
-Released under the [MIT License](LICENSE).
+1. Web Workers provide responsiveness and stoppability, **not an adversarial security boundary**. User Python can potentially interact with browser APIs available to a worker. Do not evaluate untrusted adversarial code, handle sensitive information, or reuse the engine as a remotely verified exam.
+2. A cold Pyodide initialization may take time, particularly on mobile or slow networks.
+3. No server tracks user accounts, learning progress, grades, certificates, or analytics. Browser data may be lost if storage is cleared.
+4. A 15-second runtime timeout terminates the entire worker, after which the engine is lazily loaded again on the next attempt.
+5. The curriculum is intentionally selective. It is a structured demonstration, not a complete professional qualification.
 
-## Author
+## Deploy
 
-Built by [Ali Jabbary](https://alijabbary.com), who creates practical AI, scientific-computing, and technical-learning systems.
+GitHub Pages can serve this repository from the root of the default branch. No compilation is necessary. After merging a change, make sure Settings → Pages points to the correct branch/root or a custom Pages workflow; do not deploy untested changes.
+
+For review, run `npm run check` and manually verify lesson routing, first-run Pyodide loading, correct/wrong solutions, timer cancellation, mobile navigation, backup import/export, and keyboard access in a real browser.
+
+## License & creator
+
+MIT License. Created and maintained by **[Ali Jabbary](https://alijabbary.com)**, AI/data practitioner and technical educator.
+
+- [GitHub profile](https://github.com/ali-kin4)
+- [Professional website](https://alijabbary.com)
