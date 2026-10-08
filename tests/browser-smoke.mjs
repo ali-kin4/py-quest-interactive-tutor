@@ -29,7 +29,7 @@ async function main(){
   await page.locator('[data-nav="courses"]').click();
   await check(await page.locator(".lesson-tile").count()===12,"Expected 12 course lessons");
   await page.screenshot({path:"screenshots/02-learning-paths.png",fullPage:true});
-  await page.locator('a[href="#/lesson/variables"]').first().click();
+  await page.locator('#courses-view a[href="#/lesson/variables"]').first().click();
   await page.getByRole("heading",{name:"Variables & types"}).waitFor();
   await page.locator('[data-choice="1"]').click();
   await page.getByText("✓ Correct.",{exact:false}).waitFor();
