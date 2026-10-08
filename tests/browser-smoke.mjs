@@ -60,7 +60,7 @@ async function main(){
   await page.locator("#progress-view .progress-card").first().getByText("1 / 12",{exact:true}).waitFor();
   await page.screenshot({path:"screenshots/04-progress.png",fullPage:true});
   await page.setViewportSize({width:390,height:844});
-  await page.locator('[data-nav="overview"]').click({force:true}).catch(()=>page.goto("http://127.0.0.1:8000/#/overview"));
+  await page.goto("http://127.0.0.1:8000/#/overview",{waitUntil:"domcontentloaded"});
   await page.screenshot({path:"screenshots/05-dashboard-mobile.png",fullPage:true});
   await check(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),"Horizontal overflow detected on mobile.");
   await page.locator("#menuToggle").click();
