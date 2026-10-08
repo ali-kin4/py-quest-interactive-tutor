@@ -66,7 +66,7 @@ async function main(){
   await page.locator("#menuToggle").click();
   await check(await page.locator("#sidebar").evaluate(el=>el.classList.contains("open")),"Mobile navigation did not open.");
   await page.locator('[data-nav="courses"]').click();
-  await check(await page.locator("#courses-view").evaluate(el=>el.classList.contains("active")),"Mobile navigation did not route.");
+  await page.locator("#courses-view.active").waitFor({timeout:10000});
   await check(errors.length===0,"Browser page errors: "+errors.join("; "));
   console.log("PASS: desktop/mobile navigation, quizzes, live Pyodide execution, progress persistence, mobile overflow and screenshots.");
 }
