@@ -57,7 +57,7 @@ async function main(){
   await page.screenshot({path:"screenshots/03-studio-passed.png",fullPage:true});
   await page.reload({waitUntil:"domcontentloaded"});
   await page.locator('[data-nav="progress"]').click();
-  await page.getByText("1 / 12",{exact:false}).first().waitFor();
+  await page.locator("#progress-view .progress-card").first().getByText("1 / 12",{exact:true}).waitFor();
   await page.screenshot({path:"screenshots/04-progress.png",fullPage:true});
   await page.setViewportSize({width:390,height:844});
   await page.locator('[data-nav="overview"]').click({force:true}).catch(()=>page.goto("http://127.0.0.1:8000/#/overview"));
