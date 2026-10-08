@@ -22,7 +22,10 @@ async function main(){
   browser=await chromium.launch({headless:true,args:["--no-sandbox"]});
   const page=await browser.newPage({viewport:{width:1440,height:950},deviceScaleFactor:1});
   const errors=[];
+  const failedRequests=[];
   page.on("pageerror",error=>errors.push(String(error.message)));
+  page.on("console",message=>{ if(message.type()==="error") errors.push("console: "+message.text()); });
+  page.on("requestfailed",request=>failedRequests.push(request.url()+" "+request.failure()?.errorText));
   await page.goto("http://127.0.0.1:8000/",{waitUntil:"domcontentloaded"});
   await page.getByRole("heading",{name:/Good to see you/}).waitFor();
   await page.screenshot({path:"screenshots/01-dashboard-desktop.png",fullPage:true});
@@ -37,7 +40,19 @@ async function main(){
   await page.locator("#studioTitle").getByText("Invoice total").waitFor();
   await page.locator("#codeEditor").fill('price = float(input())\nquantity = int(input())\nprint(f"{price * quantity:.2f}")');
   await page.locator("#runCode").click();
-  await page.getByText("3 / 3 passed",{exact:true}).waitFor({timeout:120000});
+  try {
+    await page.getByText("3 / 3 passed",{exact:true}).waitFor({timeout:105000});
+  } catch(err) {
+    console.error("RUNTIME DIAGNOSTIC",JSON.stringify({
+      runtimeStatus:await page.locator("#runtimeStatus").textContent(),
+      testSummary:await page.locator("#testSummary").textContent(),
+      results:await page.locator("#testResults").textContent(),
+      editorMessage:await page.locator("#editorMessage").textContent(),
+      errors,failedRequests
+    },null,2));
+    await page.screenshot({path:"screenshots/03-runtime-diagnostic.png",fullPage:true});
+    throw err;
+  }
   await check(await page.locator(".test-case.pass").count()===3,"Python runtime did not pass all cases.");
   await page.screenshot({path:"screenshots/03-studio-passed.png",fullPage:true});
   await page.reload({waitUntil:"domcontentloaded"});
