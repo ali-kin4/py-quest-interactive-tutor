@@ -1,19 +1,21 @@
 // "How to use" page: workflow, shortcuts and honest limits.
 import { problems } from "../../data/curriculum.js";
+import { lessons } from "../../data/syllabus.js";
 import { href } from "../../app/router.js";
 import { html, raw } from "../dom.js";
 
 const STEPS = [
-  ["Pick a problem", "Use the track menu and the numbered chips above the workspace, or browse the Curriculum page. Problems get harder within each track."],
-  ["Read the brief", "The left panel has the summary, full statement, task, worked examples, input/output format and constraints. Click a concept tag to ask the tutor about it."],
-  ["Write your function", "Replace the TODO and the raise NotImplementedError line in the editor. Your draft is saved in this browser as you type."],
-  ["Run the tests", "Run code (Ctrl/⌘ + Enter) executes real Python 3 in your browser. Visible tests show input, expected and actual output; hidden tests check edge cases."],
-  ["Use the tutor", "Get hint reveals progressively more specific hints, then a scaffold, then — if you want it — the reference solution. Ask “why is my code failing?” after a run for a diagnosis."],
-  ["Track progress", "A problem is solved when every visible and hidden test passes. Export your progress as JSON from the profile menu to back it up or move it to another browser."],
+  ["Follow the syllabus", "The Syllabus page lists every unit and lesson in order. Each lesson builds on the previous ones, so start at Lesson 1 unless you already know the basics."],
+  ["Learn the concept", "Each lesson explains one topic in short sections. Every code example is editable — change it and press Run to see real Python output."],
+  ["Check your understanding", "Finish the lesson quiz. Answering every question correctly completes the lesson (or mark it complete if you already know the material)."],
+  ["Practise", "The lesson ends with practice problems that use what you just learned. In the workspace, replace the TODO and the raise NotImplementedError line with your function."],
+  ["Run the tests", "Run code (Ctrl/⌘ + Enter) grades your function. Visible tests show input, expected and actual output; hidden tests check edge cases."],
+  ["Use the tutor", "Get hint reveals progressively more specific hints, then a scaffold, then — if you want it — the reference solution. Ask “why is my code failing?” after a run for a diagnosis. Each problem also links back to the lesson that teaches it."],
+  ["Track progress", "Lessons and problems are tracked in this browser. Export your progress as JSON from the profile menu to back it up or move it to another browser."],
 ];
 
 const SHORTCUTS = [
-  ["Ctrl/⌘ + Enter", "Run tests"],
+  ["Ctrl/⌘ + Enter", "Run tests (or the lesson example you are editing)"],
   ["Tab / Shift + Tab", "Indent / dedent (works on selections)"],
   ["Enter", "New line with automatic indentation"],
   ["Esc", "Leave the editor so Tab moves focus again"],
@@ -26,10 +28,10 @@ export function renderGuide(el) {
       <header class="page-head">
         <div>
           <p class="eyebrow">How to use</p>
-          <h1 id="guideTitle">Learn by solving, one function at a time</h1>
-          <p class="lead">PyQuest is a practice workspace: ${problems.length} focused problems, a real Python runtime in your browser, instant test feedback and a tutor that nudges instead of solving for you.</p>
+          <h1 id="guideTitle">Learn a concept, then put it to work</h1>
+          <p class="lead">PyQuest pairs ${lessons.length} guided lessons with ${problems.length} practice problems, a real Python runtime in your browser, instant test feedback and a tutor that nudges instead of solving for you.</p>
         </div>
-        <a class="btn btn-primary" href="${href.lesson(problems[0].id)}">Open the first problem →</a>
+        <a class="btn btn-primary" href="${href.learn(lessons[0].id)}">Start Lesson 1 →</a>
       </header>
 
       <ol class="steps">

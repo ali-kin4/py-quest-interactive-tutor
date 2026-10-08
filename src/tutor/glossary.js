@@ -217,6 +217,76 @@ export const GLOSSARY = {
     text: "Hidden tests usually probe: empty input, a single element, boundary values (0, the exact threshold), negatives, duplicates, and odd capitalisation or whitespace.",
     example: "assert fn([]) == ...\nassert fn([x]) == ...",
   },
+  arithmetic: {
+    title: "Arithmetic operators",
+    text: "`+ - * /` work as expected; `/` always returns a float. `//` divides and rounds down, `%` gives the remainder and `**` raises to a power. Use parentheses to make the order explicit.",
+    example: "7 / 2   # 3.5\n7 // 2  # 3\n7 % 2   # 1\n2 ** 3  # 8",
+  },
+  conversion: {
+    title: "int() and float()",
+    text: "`int(\"42\")` and `float(\"3.5\")` turn text into numbers; `str(42)` goes the other way. Converting text that isn't a number raises ValueError, and `int(3.9)` truncates to 3.",
+    example: 'int("42") + 1    # 43\nfloat("2.5") * 2  # 5.0',
+  },
+  builtins: {
+    title: "len, sum, min and max",
+    text: "`len(x)` counts items, `sum(nums)` adds numbers, and `min()` / `max()` find the extremes. `min` and `max` raise ValueError on an empty list, so guard that case first.",
+    example: "nums = [4, 8, 6]\nlen(nums), sum(nums), min(nums), max(nums)  # (3, 18, 4, 8)",
+  },
+  replace: {
+    title: "str.replace()",
+    text: "`text.replace(old, new)` returns a copy with every occurrence of `old` replaced. Replacing with `\"\"` deletes characters.",
+    example: '"a,b,c".replace(",", "")  # "abc"',
+  },
+  isalnum: {
+    title: "str.isalnum()",
+    text: "`ch.isalnum()` is True for letters and digits and False for spaces and punctuation. Related checks: `.isalpha()` (letters only) and `.isdigit()` (digits only).",
+    example: '"a".isalnum(), "7".isalnum(), "!".isalnum()  # (True, True, False)',
+  },
+  counting: {
+    title: "Counting",
+    text: "Start a counter at 0 before a loop and add 1 whenever a condition holds. For a one-liner, `sum(1 for x in items if condition)` counts matches.",
+    example: 'count = 0\nfor ch in "banana":\n    if ch == "a":\n        count += 1  # 3',
+  },
+  indexing: {
+    title: "Indexing",
+    text: "`seq[0]` is the first item and `seq[-1]` the last. Valid indexes run from 0 to `len(seq) - 1`; anything else raises IndexError.",
+    example: 'word = "python"\nword[0], word[-1]  # ("p", "n")',
+  },
+  pop: {
+    title: "list.pop()",
+    text: "`lst.pop()` removes and returns the last item; `lst.pop(0)` removes the first. Popping an empty list raises IndexError, so check `if lst:` first.",
+    example: "stack = [1, 2, 3]\nstack.pop()  # 3, stack is now [1, 2]",
+  },
+  boundaries: {
+    title: "Boundaries",
+    text: "Read thresholds carefully: “at least 7” is `>= 7`, “more than 7” is `> 7`. Test the exact boundary value and the values on either side — that's where most bugs live.",
+    example: "age >= 18  # 18 counts\nage > 18   # 18 does not",
+  },
+  complement: {
+    title: "The complement trick",
+    text: "When you need two values that combine to a target, the partner of `x` is `target - x`. Remember values you've already seen in a dict so you can check for the partner in O(1).",
+    example: "seen = {}\nfor i, x in enumerate(nums):\n    if target - x in seen: ...\n    seen[x] = i",
+  },
+  parsing: {
+    title: "Parsing text",
+    text: "Break structured text into fields with `split()`, check you got the number of fields you expect, then convert each field to the right type.",
+    example: 'date, time, level = "2026-10-08 12:00 INFO".split()',
+  },
+  "guard clauses": {
+    title: "Guard clauses",
+    text: "Handle special cases at the top of a function and return early. The main logic below can then assume valid input — no deep nesting needed.",
+    example: "def average(nums):\n    if not nums:\n        return None\n    return sum(nums) / len(nums)",
+  },
+  aggregation: {
+    title: "Aggregation and KPIs",
+    text: "Aggregating means turning many records into a few numbers: counts, totals, averages. Decide which records count, accumulate in one pass, and round only once at the end.",
+    example: "total = sum(amounts)\naverage = round(total / len(amounts), 2)",
+  },
+  "business rules": {
+    title: "Encoding business rules",
+    text: "Translate a rule into explicit, testable conditions. Normalise inputs (case, whitespace) first, give every input a defined outcome, and keep thresholds visible in the code.",
+    example: 'if urgency == "critical" or age_days >= 7:\n    action = "Escalate"',
+  },
 };
 
 const ALIASES = {
@@ -231,6 +301,10 @@ const ALIASES = {
   sort: "sorted", sorting: "sorted", none: "None", null: "None", recursive: "recursion",
   "big o": "algorithms", complexity: "algorithms", efficient: "algorithms", performance: "algorithms",
   stack: "stacks", "edge case": "edge cases", rounding: "round", decimals: "round", reverse: "slicing", slice: "slicing",
+  numbers: "arithmetic", operators: "arithmetic", int: "conversion", float: "conversion", convert: "conversion",
+  len: "builtins", sum: "builtins", min: "builtins", max: "builtins", in: "membership", and: "booleans", or: "booleans",
+  filtering: "comprehension", indices: "indexing", index: "indexing", boundary: "boundaries",
+  "data quality": "validation", kpis: "aggregation", kpi: "aggregation", "running sum": "sliding window", "guard clause": "guard clauses",
 };
 
 /** Find the glossary entry most relevant to free text (longest match wins, plurals allowed). */
@@ -239,8 +313,16 @@ export function lookupConcept(text) {
   const candidates = [...Object.keys(GLOSSARY), ...Object.keys(ALIASES)].sort((a, b) => b.length - a.length);
   for (const term of candidates) {
     const t = term.toLowerCase();
-    const found = /^[a-z]/.test(t) ? new RegExp(`[^a-z]${t.replace(/[-/]/g, "\\$&")}(e?s)?[^a-z]`).test(q) : q.includes(t);
+    const escaped = t.replace(/[-/]/g, "\\$&");
+    let found;
+    if (!/^[a-z]/.test(t)) found = q.includes(t);
+    else if (EVERYDAY_WORDS.has(t)) found = new RegExp(`(what s|what is|what are|what does|explain|about|use|using|${escaped} (loop|statement|keyword|function|method))[^a-z]+(a |an |the )?${escaped}(e?s)?[^a-z]|[^a-z]${escaped} (loop|statement|keyword|function|method)`).test(q);
+    else found = new RegExp(`[^a-z]${escaped}(e?s)?[^a-z]`).test(q);
     if (found) return { key: ALIASES[term] ?? term, ...GLOSSARY[ALIASES[term] ?? term] };
   }
   return null;
 }
+
+// Keywords that are also ordinary English ("a set FOR the vowels", "IF I return…"):
+// they only count when they are clearly the topic of the question.
+const EVERYDAY_WORDS = new Set(["in", "and", "or", "sum", "min", "max", "index", "replace", "pop", "counting", "parsing", "numbers", "convert", "for", "if", "while", "return", "print", "set", "get", "title", "range", "join", "split", "strip", "lower", "round", "else", "def", "sort", "reverse", "slice", "condition", "conditions", "loop", "loops", "iterate", "format", "string", "list", "tuple", "function", "functions", "parameter", "none", "null", "abs"]);

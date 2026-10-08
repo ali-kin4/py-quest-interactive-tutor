@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="PyQuest: practise Python with 30 hands-on problems, a real in-browser Python runtime, instant test feedback and a built-in tutor. Built by Ali Jabbary.">
+  <meta name="description" content="PyQuest: learn Python through 14 guided lessons and 30 hands-on problems, a real in-browser Python runtime, instant test feedback and a built-in tutor. Built by Ali Jabbary.">
   <meta name="theme-color" content="#f7f7fb" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <title>PyQuest — Learn Python by Solving Problems</title>
@@ -25,13 +25,14 @@
 
   <header class="app-header">
     <div class="header-inner">
-      <a class="brand" href="#/lesson" aria-label="PyQuest home">
+      <a class="brand" href="#/syllabus" aria-label="PyQuest syllabus">
         <img src="./assets/logo.svg" alt="" width="36" height="36">
         <span>PyQuest</span>
       </a>
       <nav class="main-nav" aria-label="Primary">
-        <a href="#/lesson" data-nav="lesson">Lessons</a>
-        <a href="#/curriculum" data-nav="curriculum">Curriculum</a>
+        <a href="#/learn" data-nav="learn">Lessons</a>
+        <a href="#/practice" data-nav="practice">Practice</a>
+        <a href="#/syllabus" data-nav="syllabus">Syllabus</a>
         <a href="#/guide" data-nav="guide">How to use</a>
       </nav>
       <div class="header-actions">
@@ -71,8 +72,11 @@
 
   <div class="app-body" id="appBody">
   <main id="main" tabindex="-1">
-    <!-- Lesson workspace -->
-    <section class="view workspace" id="lesson-view" aria-label="Lesson workspace">
+    <!-- Teaching lesson -->
+    <section class="view learn" id="learn-view" aria-label="Lesson" hidden></section>
+
+    <!-- Practice workspace -->
+    <section class="view workspace" id="practice-view" aria-label="Practice workspace">
       <div class="problem-strip card">
         <div class="track-picker">
           <button class="btn btn-primary track-button" id="trackButton" type="button" aria-haspopup="listbox" aria-expanded="false">
@@ -128,8 +132,8 @@
       </section>
     </section>
 
-    <!-- Curriculum -->
-    <section class="view page" id="curriculum-view" aria-labelledby="curriculumTitle" hidden></section>
+    <!-- Syllabus -->
+    <section class="view page" id="syllabus-view" aria-labelledby="syllabusTitle" hidden></section>
 
     <!-- How to use -->
     <section class="view page" id="guide-view" aria-labelledby="guideTitle" hidden></section>

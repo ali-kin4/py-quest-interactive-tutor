@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   validate:
-    name: Unit tests and solution verification
+    name: Unit tests, solutions and lesson examples
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,6 +26,8 @@ jobs:
         run: npm test
       - name: Grade every reference solution with the real harness
         run: npm run verify:solutions
+      - name: Run every lesson example and check its documented output
+        run: npm run verify:lessons
 
   e2e:
     name: Browser end-to-end

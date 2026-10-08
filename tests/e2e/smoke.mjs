@@ -25,11 +25,29 @@ async function main() {
     page.on("pageerror", (e) => errors.push(e.message));
     page.on("console", (m) => m.type() === "error" && !/favicon/.test(m.text()) && errors.push(m.text()));
 
-    // 1. Workspace renders the requested problem with its strip and tutor.
-    await page.goto(`${BASE}#/lesson/count-vowels`);
+    // 0. Teaching lesson: run an editable example, take the quiz, complete the lesson.
+    await page.goto(BASE);
+    await page.getByRole("heading", { name: "Your First Python Program" }).waitFor();
+    await page.screenshot({ path: `${SHOTS}/00-lesson.png` });
+    const firstExample = page.locator(".example-block").first();
+    await firstExample.locator(".editor-input").fill('print("edited", 6 * 7)');
+    await firstExample.locator("[data-run-example]").click();
+    await firstExample.locator(".example-output", { hasText: "edited 42" }).waitFor({ timeout: 120000 });
+    const quiz = await page.evaluate(async () => (await import("./src/data/syllabus.js")).lessons[0].quiz.map((q) => q.answer));
+    for (const [qi, answer] of quiz.entries()) {
+      await page.locator(`[data-question="${qi}"] [data-option="${answer}"]`).click();
+    }
+    await page.locator(".complete-banner").waitFor();
+    check(await page.locator(".nav-unit a.done").count() === 1, "Sidebar should show the lesson as done");
+    await page.locator(".pager.next").click();
+    await page.getByRole("heading", { name: "Variables & Data Types" }).waitFor();
+
+    // 1. Practice workspace renders the requested problem with its strip, lesson link and tutor.
+    await page.goto(`${BASE}#/practice/count-vowels`);
     await page.getByRole("heading", { name: "Count Vowels in a String" }).waitFor();
     check(await page.locator(".chip.active").innerText().then((t) => t.includes("Count Vowels")), "Active chip should be the current problem");
     check(await page.locator(".test-card.pending").count() === 3, "Expected 3 visible test previews before running");
+    check((await page.locator(".learn-first").innerText()).includes("Repeating with Loops"), "Problem should link to the lesson that teaches it");
     await page.locator(".msg-tutor").first().waitFor();
 
     // 2. Untouched starter fails and the tutor diagnoses NotImplementedError.
@@ -43,7 +61,7 @@ async function main() {
     await page.locator(".msg-tutor", { hasText: "Hint 1 of 3" }).waitFor();
 
     // 4. A correct solution passes visible and hidden tests and marks the problem solved.
-    const editor = page.locator(".editor-input");
+    const editor = page.locator("#practice-view .editor-input");
     await editor.fill(SOLUTION);
     await page.keyboard.press("Control+Enter");
     await page.locator(".alert-success").waitFor({ timeout: 30000 });
@@ -72,18 +90,19 @@ async function main() {
     await page.locator("#runCode").click();
     await page.locator(".alert-success").waitFor({ timeout: 120000 });
 
-    // 8. Progress persists across reloads and shows on the curriculum page.
+    // 8. Progress persists across reloads and shows on the syllabus page.
     await page.reload();
-    await page.locator('[data-nav="curriculum"]').click();
-    await page.getByRole("heading", { name: /3 tracks · 30 problems/ }).waitFor();
-    check((await page.locator(".stat-value").first().innerText()).startsWith("1/30"), "Curriculum should show 1 solved problem");
-    await page.screenshot({ path: `${SHOTS}/02-curriculum.png`, fullPage: true });
+    await page.locator('[data-nav="syllabus"]').click();
+    await page.getByRole("heading", { name: /from first line to real data/ }).waitFor();
+    const stats = await page.locator(".stat-value").allInnerTexts();
+    check(stats[0] === "1/14" && stats[1] === "1/30", `Syllabus should show 1 lesson and 1 problem done, got ${stats}`);
+    await page.screenshot({ path: `${SHOTS}/02-syllabus.png`, fullPage: true });
 
     await page.locator('[data-nav="guide"]').click();
-    await page.getByRole("heading", { name: /Learn by solving/ }).waitFor();
+    await page.getByRole("heading", { name: /Learn a concept, then put it to work/ }).waitFor();
 
     // 9. Dark theme.
-    await page.locator('[data-nav="lesson"]').click();
+    await page.locator('[data-nav="practice"]').click();
     await page.locator("#themeToggle").click();
     await page.waitForTimeout(400); // let colour transitions finish
     await page.screenshot({ path: `${SHOTS}/03-workspace-dark.png` });
@@ -91,7 +110,11 @@ async function main() {
     // 10. Mobile layout: no horizontal overflow, tutor opens as a drawer.
     const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
     mobile.on("pageerror", (e) => errors.push(e.message));
-    await mobile.goto(`${BASE}#/lesson/two-sum`);
+    await mobile.goto(`${BASE}#/learn/loops`);
+    await mobile.getByRole("heading", { name: "Repeating with Loops" }).waitFor();
+    check(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "Horizontal overflow on mobile lesson");
+    await mobile.screenshot({ path: `${SHOTS}/06-mobile-lesson.png` });
+    await mobile.goto(`${BASE}#/lesson/two-sum`); // legacy link still opens the practice workspace
     await mobile.getByRole("heading", { name: "Two Sum" }).waitFor();
     check(await mobile.locator(".brand").evaluate((el) => el.getBoundingClientRect().top >= 0), "Header content is clipped on mobile");
     check(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "Horizontal overflow on mobile");
@@ -104,7 +127,7 @@ async function main() {
     await mobile.locator("#tutorPanel.open").waitFor({ state: "detached" });
 
     check(errors.length === 0, `Browser errors: ${errors.join(" | ")}`);
-    console.log("PASS: workspace, grading, hints, tutor, stop/recover, persistence, curriculum, theme, mobile.");
+    console.log("PASS: lessons, examples, quiz, workspace, grading, hints, tutor, stop/recover, persistence, syllabus, theme, mobile.");
   } finally {
     await browser.close();
     server.close();

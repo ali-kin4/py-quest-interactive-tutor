@@ -155,7 +155,8 @@ export function diagnose(problem, report) {
 const INTENTS = [
   { id: "greet", re: /^\s*(hi|hello|hey|yo|salam|good (morning|afternoon|evening))\b/i },
   { id: "solution", re: /\b(solution|answer|full code|solve it|give me the code|just tell me)\b/i },
-  { id: "diagnose", re: /\b(why|fail|failing|wrong|error|bug|broken|not work|doesn'?t work|crash|traceback|exception)\b/i },
+  // "why" alone is not a failure question ("why use a set?"), so it needs a failure word.
+  { id: "diagnose", re: /\b(fail\w*|wrong|error|bug|broken|not work\w*|doesn'?t work|crash\w*|traceback|exception)\b/i },
   { id: "hint", re: /\b(hint|stuck|help|start|begin|approach|how (do|should|can) i|where do i|next step)\b/i },
   { id: "example", re: /\b(example|sample|demo)\b/i },
   { id: "hidden", re: /\b(hidden|test cases?|tests)\b/i },

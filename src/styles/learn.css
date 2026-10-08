@@ -1,0 +1,807 @@
+/* Teaching lessons and the syllabus page. */
+
+/* ----- Lesson layout --------------------------------------------------------- */
+.learn-layout {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.learn-sidebar {
+  position: sticky;
+  top: calc(var(--header-h) + 12px);
+  max-height: calc(100dvh - var(--header-h) - 24px);
+  overflow-y: auto;
+  border-radius: var(--radius-lg);
+}
+
+.syllabus-nav {
+  padding: 16px 12px;
+}
+
+.syllabus-nav-head {
+  display: block;
+  padding: 4px 8px 14px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.syllabus-nav-head strong {
+  display: block;
+  margin-top: 2px;
+}
+
+.nav-unit + .nav-unit {
+  margin-top: 14px;
+}
+
+.nav-unit > .eyebrow {
+  padding: 0 8px 6px;
+  font-size: 10px;
+}
+
+.nav-unit ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-unit a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.nav-unit a:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.nav-unit a.active {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.nav-num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.nav-unit a.done .nav-num {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.nav-unit a.active .nav-num {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* ----- Lesson article ----------------------------------------------------- */
+.lesson {
+  padding: 36px 48px 40px;
+  min-width: 0;
+}
+
+.lesson-header h1 {
+  margin: 8px 0 10px;
+  font-size: clamp(28px, 3.2vw, 38px);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+.lesson-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.lesson-meta > span:not(.badge)::before {
+  content: "•";
+  margin-right: 8px;
+  color: var(--faint);
+}
+
+.lesson-meta > span:first-child::before {
+  content: none;
+}
+
+.objectives {
+  margin: 28px 0 8px;
+  padding: 18px 22px;
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-lg);
+  background: var(--accent-soft);
+}
+
+.objectives .eyebrow {
+  color: var(--accent-text);
+  margin-bottom: 8px;
+}
+
+.objectives ul {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 4px;
+}
+
+.lesson-section {
+  margin-top: 36px;
+}
+
+.lesson-section > h2 {
+  margin-bottom: 12px;
+  font-size: 22px;
+  letter-spacing: -0.015em;
+}
+
+.lesson-section > p,
+.lesson-section > ul {
+  max-width: 72ch;
+  color: var(--text-2);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.lesson-section > p + p,
+.lesson-section > p + ul,
+.lesson-section > ul + p {
+  margin-top: 12px;
+}
+
+.lesson-section > ul {
+  padding-left: 22px;
+}
+
+.lesson :not(pre) > code {
+  font-size: 0.88em;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--surface-3);
+}
+
+/* Runnable example */
+.example-block {
+  margin: 18px 0 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.example-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.example-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-sm {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.example-editor.code-editor {
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  --code-size: 14px;
+}
+
+.example-editor .editor-scroll {
+  overflow-y: hidden;
+}
+
+.example-editor.code-editor:focus-within {
+  box-shadow: inset 0 0 0 2px var(--accent-border);
+}
+
+.example-output {
+  padding: 10px 16px 14px;
+  border-top: 1px dashed var(--border-strong);
+  background: var(--surface-2);
+  transition: opacity 0.15s;
+}
+
+.example-output.running {
+  opacity: 0.5;
+}
+
+.example-output pre {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.out-error {
+  color: var(--danger);
+}
+
+.example-block figcaption {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 13.5px;
+  color: var(--text-2);
+}
+
+/* Callouts */
+.callout {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: 1px solid;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.callout .icon {
+  margin-top: 3px;
+}
+
+.callout-tip {
+  background: var(--success-soft);
+  border-color: var(--success-border);
+}
+
+.callout-tip .icon,
+.callout-tip strong {
+  color: var(--success);
+}
+
+.callout-note {
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+}
+
+.callout-note .icon,
+.callout-note strong {
+  color: var(--accent-text);
+}
+
+.callout-warning {
+  background: var(--warning-soft);
+  border-color: color-mix(in srgb, var(--warning) 35%, transparent);
+}
+
+.callout-warning .icon,
+.callout-warning strong {
+  color: var(--warning);
+}
+
+/* Recap and mistakes */
+.checklist {
+  list-style: none;
+  padding: 0 !important;
+  display: grid;
+  gap: 8px;
+}
+
+.checklist li {
+  position: relative;
+  padding-left: 30px;
+}
+
+.checklist li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--success-soft);
+  color: var(--success);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mistakes {
+  display: grid;
+  gap: 10px;
+}
+
+.mistake {
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.mistake p {
+  display: flex;
+  gap: 10px;
+  font-size: 15px;
+}
+
+.mistake p + p {
+  margin-top: 6px;
+}
+
+.m-wrong > span:first-child {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.m-fix > span:first-child {
+  color: var(--success);
+  font-weight: 700;
+}
+
+/* Quiz */
+.quiz-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.quiz-head h2 {
+  font-size: 22px;
+}
+
+.question {
+  margin: 0 0 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.question.is-right {
+  border-color: var(--success-border);
+}
+
+.question legend {
+  display: flex;
+  gap: 10px;
+  padding: 0 6px;
+  margin-left: -6px;
+  font-weight: 600;
+  font-size: 15.5px;
+}
+
+.q-num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-size: 12px;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: left;
+  font-size: 14.5px;
+}
+
+.option:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.option:disabled {
+  cursor: default;
+}
+
+.opt-letter {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--surface-3);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.option.chosen-right {
+  border-color: var(--success);
+  background: var(--success-soft);
+}
+
+.option.chosen-right .opt-letter {
+  background: var(--success);
+  color: #fff;
+}
+
+.option.chosen-wrong {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.option.chosen-wrong .opt-letter {
+  background: var(--danger);
+  color: #fff;
+}
+
+.feedback {
+  margin-top: 10px;
+  font-size: 14.5px;
+  color: var(--text-2);
+}
+
+.is-right .feedback {
+  color: var(--success);
+}
+
+.is-wrong .feedback {
+  color: var(--danger);
+}
+
+.complete-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding: 14px 18px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+}
+
+.complete-row p {
+  max-width: 60ch;
+  font-size: 14px;
+}
+
+.complete-banner {
+  margin-top: 8px;
+  padding: 14px 18px;
+  border: 1px solid var(--success-border);
+  border-radius: var(--radius-lg);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+/* Practice links */
+.practice-box > h2 {
+  margin-bottom: 4px;
+}
+
+.practice-grid {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.practice-card {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.practice-card:hover {
+  border-color: var(--accent-border);
+  background: var(--surface-2);
+}
+
+.practice-num {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--accent-gradient);
+  color: #fff;
+  font-weight: 700;
+}
+
+.practice-card.solved .practice-num {
+  background: var(--success);
+}
+
+.practice-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.practice-main .muted {
+  font-size: 13px;
+}
+
+.text-link {
+  color: var(--accent-text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.lesson-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.pager {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.pager:hover {
+  border-color: var(--accent-border);
+}
+
+.pager.next {
+  text-align: right;
+  grid-column: 2;
+}
+
+/* "Learn first" link in the practice problem panel */
+.learn-first {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.learn-first .icon {
+  color: var(--accent-text);
+}
+
+.learn-first .eyebrow {
+  font-size: 10px;
+  color: var(--accent-text);
+}
+
+.learn-first:hover {
+  border-color: var(--accent);
+}
+
+/* ----- Syllabus page -------------------------------------------------------- */
+.units {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 16px;
+}
+
+.unit {
+  padding: 22px;
+}
+
+.unit-head {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+
+.unit-num {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--accent-gradient);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.unit-head h2 {
+  font-size: 20px;
+}
+
+.unit-progress {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.lesson-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.lesson-row {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.lesson-row:hover {
+  border-color: var(--accent-border);
+}
+
+.lesson-link {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 64px 100px;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+}
+
+.lesson-link .num {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--surface-3);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.lesson-row.done .num {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.lesson-row.done .status-pill {
+  color: var(--success);
+}
+
+.lesson-practice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px 12px 66px;
+}
+
+.lesson-practice .eyebrow {
+  margin-right: 4px;
+  font-size: 10px;
+}
+
+.mini-chip {
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.mini-chip:hover {
+  border-color: var(--accent-border);
+  color: var(--accent-text);
+}
+
+.mini-chip.solved {
+  border-color: var(--success-border);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+/* ----- Responsive ------------------------------------------------------------ */
+@media (max-width: 1023px) {
+  .learn-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .learn-sidebar {
+    display: none;
+  }
+
+  .lesson {
+    padding: 28px 28px 32px;
+  }
+}
+
+@media (max-width: 760px) {
+  .lesson {
+    padding: 22px 16px 26px;
+  }
+
+  .options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lesson-pager {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pager.next {
+    grid-column: 1;
+  }
+
+  .unit {
+    padding: 16px 12px;
+  }
+
+  .unit-head {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+
+  .unit-num {
+    width: 40px;
+    height: 40px;
+    font-size: 17px;
+  }
+
+  .unit-progress {
+    display: none;
+  }
+
+  .lesson-link {
+    grid-template-columns: 36px minmax(0, 1fr);
+  }
+
+  .lesson-link .row-meta,
+  .lesson-link .status-pill {
+    display: none;
+  }
+
+  .lesson-practice {
+    padding-left: 12px;
+  }
+}

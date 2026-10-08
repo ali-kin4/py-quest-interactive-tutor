@@ -43,7 +43,7 @@ export function createWorkspace({ store, runner, confirm }) {
     $("#problemChips").innerHTML = problemsInTrack(track.id)
       .map((p) => {
         const classes = ["chip", p.id === problem.id && "active", store.isSolved(p.id) && "solved"].filter(Boolean).join(" ");
-        return html`<a class="${classes}" href="${href.lesson(p.id)}" ${raw(p.id === problem.id ? 'aria-current="page"' : "")} title="${p.title} · ${p.difficulty}${store.isSolved(p.id) ? " · solved" : ""}">
+        return html`<a class="${classes}" href="${href.practice(p.id)}" ${raw(p.id === problem.id ? 'aria-current="page"' : "")} title="${p.title} · ${p.difficulty}${store.isSolved(p.id) ? " · solved" : ""}">
           <span>${p.number}. ${p.title}</span><span class="chip-diff diff-${p.difficulty.toLowerCase()}" aria-label="${p.difficulty}">${DIFFICULTY_SHORT[p.difficulty]}</span></a>`;
       })
       .join("");
@@ -70,7 +70,7 @@ export function createWorkspace({ store, runner, confirm }) {
     if (!item) return;
     setTrackMenu(false);
     const list = problemsInTrack(item.dataset.track);
-    location.hash = href.lesson((list.find((p) => !store.isSolved(p.id)) ?? list[0]).id);
+    location.hash = href.practice((list.find((p) => !store.isSolved(p.id)) ?? list[0]).id);
   });
   trackMenu.addEventListener("keydown", (event) => {
     const items = $$("[data-track]", trackMenu);
@@ -90,7 +90,7 @@ export function createWorkspace({ store, runner, confirm }) {
 
   const step = (delta) => {
     const next = problems[problems.indexOf(problem) + delta];
-    if (next) location.hash = href.lesson(next.id);
+    if (next) location.hash = href.practice(next.id);
   };
   $("#prevProblem").addEventListener("click", () => step(-1));
   $("#nextProblem").addEventListener("click", () => step(1));
