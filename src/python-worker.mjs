@@ -61,14 +61,15 @@ async function init() {
 
 self.onmessage = async (event) => {
   const payload = event.data ?? {};
-  if (payload.type !== "run") return;
+  if (payload.type !== "run" && payload.type !== "init") return;
   try {
     const pyodide = await init();
+    if (payload.type === "init") return;
     pyodide.globals.set("pyquest_source", String(payload.code ?? "").slice(0, 20000));
     pyodide.globals.set("pyquest_tests_json", JSON.stringify(payload.tests ?? []));
     const result = await pyodide.runPythonAsync("_pyquest_grade(pyquest_source, pyquest_tests_json)");
     postMessage({ type: "results", runId: payload.runId, results: JSON.parse(result) });
   } catch (err) {
-    postMessage({ type: "error", runId: payload.runId, error: String(err?.message ?? err) });
+    postMessage({ type: payload.type === "init" ? "init_error" : "error", runId: payload.runId ?? null, error: String(err?.message ?? err) });
   }
 };
