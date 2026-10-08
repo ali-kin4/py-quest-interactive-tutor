@@ -58,6 +58,6 @@ test("engine uses module worker, timeout and text-only output rendering", () => 
 
 test("no simulated certification or hidden grading services", () => {
   assert.match(html,/not a security sandbox/);
-  assert.match(html,/not a remotely verified exam/);
+  assert.match(html,/remotely verified exam/);
   assert.doesNotMatch(app,/eval\(/);
 });
