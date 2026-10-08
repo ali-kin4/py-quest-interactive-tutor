@@ -1,84 +1,74 @@
-# PyQuest Academy
+# PyQuest
 
-**Learn Python by building useful things.** PyQuest is a no-account, browser-based learning academy and a live demonstration of practical technical instruction by [Ali Jabbary](https://alijabbary.com).
+**Learn Python by solving real problems — in your browser.** PyQuest is a no-account practice workspace: read a brief, write a function, run real Python 3 against visible and hidden tests, and get help from a built-in tutor that nudges instead of solving for you.
 
 **Live site:** https://ali-kin4.github.io/py-quest-interactive-tutor/
 
-The academy is designed around a complete learning loop: **understand → see an example → answer a knowledge check → write Python → inspect test feedback → demonstrate progress**. Lessons use authentic business and technical scenarios rather than isolated syntax drills.
+![PyQuest workspace: problem brief, code editor with passing test cases, and the tutor panel](docs/images/workspace.png)
 
-## Experience
+## Features
 
-- **Professional academy interface:** Responsive learning dashboard, lesson catalogue, coding studio, progress overview, and instructor showcase.
-- **12 hands-on lessons, 3 connected learning paths:** Python foundations; practical Python; data and automation.
-- **Runnable Python in the browser:** Pyodide executes code in a Web Worker after a lazy first load.
-- **Transparent feedback:** Every challenge declares example input/output cases. The result shows which passed, what was expected, and what ran.
-- **Safe interruption / recovery:** Stop button and per-run execution timeout terminate the worker to recover the interface from long-running code. **This is not a security sandbox.**
-- **Local-first progress:** Completed challenges, quiz results, and editable code are saved in your browser. Import/export your progress as JSON.
-- **Practical capstone:** Build a validated revenue summary from transactions and invalid records.
-- **Keyboard and mobile support:** Accessible navigation, focus indicators, reduced-motion support, responsive layouts, and Ctrl/Cmd+Enter execution.
+- **Three-panel workspace.** The problem brief (summary, statement, task, worked examples, formats, constraints) sits beside a code editor with test results and a tutor panel.
+- **30 problems in 3 tracks:** *Python Basics* (strings, branching, loops, Euclid's GCD), *Collections & Algorithms* (dicts, sets, two-sum, stacks, recursion, merging) and *Practical Python* (validation, log parsing, moving averages, a revenue capstone).
+- **Real Python, no install.** Pyodide (CPython 3.12 on WebAssembly) runs in a Web Worker. It starts loading while you read. A **Stop** button and a 15-second timeout recover from infinite loops.
+- **Transparent grading.** Visible tests show input, expected output and your output. Hidden tests probe edge cases. Tests also show printed output, error lines and per-run insights.
+- **Tutor.** **Get hint** climbs a ladder: three hints, then a scaffold you can insert, then (if you insist) the reference solution. Ask “why is my code failing?” after a run to get a diagnosis of the error type, `None` returns, type mismatches, rounding or hidden edge cases. Ask about concepts (“what is a dictionary?”) for short explanations with examples.
+- **Editor comforts:** syntax highlighting, line numbers, auto-indent, Tab/Shift-Tab block indent, Ctrl/⌘+Enter to run, drafts saved as you type.
+- **Progress that stays yours.** Solved problems, attempts, hints and drafts live in `localStorage`. You can export and import them as JSON from the profile menu.
+- **Light and dark themes, responsive down to phones, keyboard accessible.**
 
-### Paths and outcomes
+<img src="docs/images/mobile.png" alt="PyQuest on a phone" width="260">
 
-| Path | Lessons | Practical outcomes |
-| --- | --- | --- |
-| Python Foundations | Variables, strings, decisions, loops | Invoices, text cleanup, tiered discounts, sales totals |
-| Practical Python | Functions, collections, validation, transformations | Tax calculators, ticket summaries, data validation, transaction cleanup |
-| Data & Automation | KPI calculation, quality checks, triage automation, capstone | Business metrics, sensor quality, support routing, validated revenue reporting |
+## Honest limits
 
-**Assessment scope:** The checks are visible, client-side demonstration tests—not secret graders, proctored assessments, or certifications. Passing them provides feedback about the given cases, not a proof that code is correct for every possible input.
+- The tutor is **rule-based and local**, not a large language model. Nothing you type is sent anywhere.
+- Grading runs in your browser. It gives you feedback and is **not** a secure exam, certification, or sandbox for untrusted code.
+- The first run downloads Pyodide (~10 MB) from jsDelivr. Progress is lost if you clear site data, so export a backup.
 
 ## Run locally
 
-Prerequisites: A modern browser and a lightweight local HTTP server. GitHub Pages needs no build process.
+```bash
+npm start                 # serves http://127.0.0.1:8000 — Node 20+, nothing to install
+```
 
-From a local checkout:
+Any static server works (`python -m http.server` too). There is no build step.
 
-~~~bash
-python -m http.server 8000
-~~~
+## Quality checks
 
-Open http://localhost:8000. On first test run, your browser downloads Pyodide from a pinned jsDelivr URL. An internet connection is therefore required initially. UI and lessons do not require a Python installation.
+```bash
+npm test                  # unit tests: curriculum schema, tutor, store, router, escaping, highlighter
+npm run verify:solutions  # grades all 30 reference solutions with the real harness under CPython
+npm run test:e2e          # end-to-end in Chromium (needs: npm i --no-save playwright && npx playwright install chromium)
+```
 
-Run the built-in structural and curriculum quality checks:
+CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs all three on every pull request and uploads screenshots.
 
-~~~bash
-npm run check
-~~~
+## Project structure
 
-Node.js 20+ is required for checks only, not the public site.
+```text
+index.html                 App shell (header, workspace, tutor, dialogs)
+assets/                    Logo / favicon
+src/
+  main.js                  Entry point: wiring, theme, profile menu, routing
+  app/                     store.js (local-first state), router.js (hash routes)
+  data/                    curriculum.js + tracks/{basics,collections,practical}.js
+  runtime/                 python-runner.js (worker client), python-worker.js, harness.py
+  tutor/                   engine.js (hints, diagnosis, Q&A), glossary.js
+  ui/                      dom.js, editor.js, highlight.js, tutor-panel.js, views/
+  styles/                  tokens, base, layout, components, editor, pages
+scripts/                   serve.mjs, verify-solutions.mjs, verify_solutions.py
+tests/unit/                node:test suites
+tests/e2e/                 Playwright smoke test
+docs/                      ARCHITECTURE.md, LESSON_AUTHORING.md, images/
+legacy/week1.html          The original Week 1 game, still reachable from the profile menu
+```
 
-## Architecture
-
-~~~text
-index.html                   static app shell and semantic content regions
-src/styles.css               responsive design system
-src/app.mjs                  routes, UI rendering, browser persistence, worker lifecycle
-src/curriculum.mjs           reviewed lessons, quizzes, input/output test cases
-src/python-worker.mjs        Pyodide execution and captured test results
-tests/curriculum.test.mjs    schema, lesson coverage and application integrity checks
-docs/LESSON_AUTHORING.md    standards for adding and validating lessons
-.github/workflows/ci.yml    continuous checks for changes and pull requests
-~~~
-
-The site is intentionally simple: **no paid APIs, account creation, database, vendor lock-in, or deployment secrets**. Python evaluation and progress processing occur client-side. It uses remote font and Pyodide CDN assets.
-
-### Limits and safety
-
-1. Web Workers provide responsiveness and stoppability, **not an adversarial security boundary**. User Python can potentially interact with browser APIs available to a worker. Do not evaluate untrusted adversarial code, handle sensitive information, or reuse the engine as a remotely verified exam.
-2. A cold Pyodide initialization may take time, particularly on mobile or slow networks.
-3. No server tracks user accounts, learning progress, grades, certificates, or analytics. Browser data may be lost if storage is cleared.
-4. A 15-second runtime timeout terminates the entire worker, after which the engine is lazily loaded again on the next attempt.
-5. The curriculum is intentionally selective. It is a structured demonstration, not a complete professional qualification.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how grading and the tutor work, and [docs/LESSON_AUTHORING.md](docs/LESSON_AUTHORING.md) to add problems.
 
 ## Deploy
 
-GitHub Pages can serve this repository from the root of the default branch. No compilation is necessary. After merging a change, make sure Settings → Pages points to the correct branch/root or a custom Pages workflow; do not deploy untested changes.
-
-For review, run `npm run check` and manually verify lesson routing, first-run Pyodide loading, correct/wrong solutions, timer cancellation, mobile navigation, backup import/export, and keyboard access in a real browser.
+GitHub Pages serves the repository root of `main` with no build. After merging, check that Settings → Pages points at `main` / root.
 
 ## License & creator
 
-MIT License. Created and maintained by **[Ali Jabbary](https://alijabbary.com)**, AI/data practitioner and technical educator.
-
-- [GitHub profile](https://github.com/ali-kin4)
-- [Professional website](https://alijabbary.com)
+MIT License. Created and maintained by **[Ali Jabbary](https://alijabbary.com)** — [GitHub](https://github.com/ali-kin4).

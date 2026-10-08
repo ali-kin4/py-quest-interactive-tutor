@@ -3,141 +3,185 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0d1833">
-  <meta name="description" content="PyQuest Academy: learn Python with guided lessons, real business problems, browser-based coding and transparent feedback. Built by Ali Jabbary.">
-  <title>PyQuest Academy — Learn Python by Building</title>
+  <meta name="description" content="PyQuest: practise Python with 30 hands-on problems, a real in-browser Python runtime, instant test feedback and a built-in tutor. Built by Ali Jabbary.">
+  <meta name="theme-color" content="#f7f7fb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
+  <title>PyQuest — Learn Python by Solving Problems</title>
+  <link rel="icon" href="./assets/logo.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./src/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/styles/main.css">
+  <script>
+    // Apply the saved theme before first paint to avoid a flash.
+    try {
+      const saved = JSON.parse(localStorage.getItem("pyquest-workspace-v2") || "{}").theme;
+      if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
+    } catch {}
+  </script>
 </head>
 <body>
-  <a class="skip-link" href="#main-content">Skip to content</a>
-  <div class="shell">
-    <div id="mobileShade" class="mobile-shade" hidden></div>
-    <aside id="sidebar" class="sidebar" aria-label="Main navigation">
-      <a class="brand" href="#/overview" aria-label="PyQuest Academy home">
-        <span class="brand-logo" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#6D5DF5"/><path d="M14 17h12M14 23h12M20 11l-7 6 7 6" stroke="white" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="27" cy="26" r="3" fill="#7BE4CC"/></svg></span>
-        <span><strong>pyquest<span class="brand-dot">.</span></strong><small>LEARNING ACADEMY</small></span>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="app-header">
+    <div class="header-inner">
+      <a class="brand" href="#/lesson" aria-label="PyQuest home">
+        <img src="./assets/logo.svg" alt="" width="36" height="36">
+        <span>PyQuest</span>
       </a>
-      <div class="sidebar-label">WORKSPACE</div>
-      <nav class="side-nav" aria-label="Primary">
-        <a href="#/overview" data-nav="overview" class="side-link active"><span class="nav-glyph">◫</span>Overview</a>
-        <a href="#/courses" data-nav="courses" class="side-link"><span class="nav-glyph">▤</span>Learning paths</a>
-        <a href="#/studio" data-nav="studio" class="side-link"><span class="nav-glyph">⌘</span>Code studio</a>
-        <a href="#/progress" data-nav="progress" class="side-link"><span class="nav-glyph">◉</span>My progress</a>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="#/lesson" data-nav="lesson">Lessons</a>
+        <a href="#/curriculum" data-nav="curriculum">Curriculum</a>
+        <a href="#/guide" data-nav="guide">How to use</a>
       </nav>
-      <div class="sidebar-label sidebar-label-space">EXPLORE</div>
-      <nav class="side-nav" aria-label="Resources">
-        <a href="#/instructor" data-nav="instructor" class="side-link"><span class="nav-glyph">▥</span>Instructor showcase</a>
-        <a href="./legacy/week1.html" class="side-link"><span class="nav-glyph">↺</span>Classic Week 1</a>
-        <a href="https://github.com/ali-kin4/py-quest-interactive-tutor" target="_blank" rel="noopener noreferrer" class="side-link"><span class="nav-glyph">↗</span>Source code</a>
-      </nav>
-      <div class="sidebar-spacer"></div>
-      <div class="sidebar-course" aria-label="Current learning progress">
-        <div class="sidebar-course-top"><span class="tiny-tag">YOUR JOURNEY</span><span id="sidebarPct">0%</span></div>
-        <strong>Keep building</strong>
-        <p>Real skills, one exercise at a time.</p>
-        <div class="progress-track"><div id="sidebarBar" class="progress-fill"></div></div>
-        <span id="sidebarComplete" class="small-dim">0 of 12 lessons completed</span>
-      </div>
-      <div class="sidebar-footer">
-        <span class="avatar" aria-hidden="true">AJ</span>
-        <span><strong>Built by Ali Jabbary</strong><small>AI & Python Educator</small></span>
-        <a href="https://alijabbary.com" target="_blank" rel="noopener noreferrer" aria-label="Ali Jabbary website">↗</a>
-      </div>
-    </aside>
-    <div class="main-column">
-      <header class="topbar">
-        <div class="topbar-left">
-          <button id="menuToggle" type="button" class="icon-button mobile-menu" aria-label="Open navigation" aria-expanded="false">☰</button>
-          <span class="breadcrumb">PYQUEST <span>/</span> <strong id="pageBreadcrumb">Overview</strong></span>
+      <div class="header-actions">
+        <span class="runtime-status" id="runtimeStatus" data-state="idle" role="status" aria-live="polite">
+          <span class="dot" aria-hidden="true"></span><span class="label">Python loads on first run</span>
+        </span>
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle colour theme" title="Toggle theme">
+          <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <button class="btn btn-primary tutor-toggle" id="tutorToggle" type="button" aria-controls="tutorPanel" aria-expanded="true">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
+          <span>Tutor</span>
+          <svg class="icon icon-panel" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/></svg>
+        </button>
+        <div class="user-menu">
+          <button class="user-btn" id="userMenuButton" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="userMenu">
+            <span class="avatar" id="userAvatar" aria-hidden="true">L</span>
+            <span class="user-name" id="userName">Learner</span>
+            <svg class="icon chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="menu" id="userMenu" role="menu" hidden>
+            <div class="menu-progress" id="menuProgress"></div>
+            <button role="menuitem" type="button" data-action="rename">Change display name</button>
+            <button role="menuitem" type="button" data-action="export">Export progress (JSON)</button>
+            <button role="menuitem" type="button" data-action="import">Import progress…</button>
+            <a role="menuitem" href="./legacy/week1.html">Classic Week 1 game</a>
+            <a role="menuitem" href="https://github.com/ali-kin4/py-quest-interactive-tutor" target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a>
+            <hr>
+            <button role="menuitem" type="button" data-action="reset" class="danger">Reset all progress</button>
+          </div>
+          <input type="file" id="importInput" accept="application/json,.json" hidden>
         </div>
-        <div class="topbar-right">
-          <span class="status-chip"><span id="runtimeDot" class="status-dot"></span><span id="runtimeStatus">Python loads when needed</span></span>
-          <button id="exportProgress" class="icon-button" type="button" title="Export progress report" aria-label="Export progress report">⇩</button>
-          <span class="avatar avatar-small" title="Your progress is stored in this browser">PY</span>
-        </div>
-      </header>
-      <main id="main-content" tabindex="-1">
-        <section id="overview-view" class="view active" aria-label="Overview">
-          <div class="welcome-row">
-            <div><p class="eyebrow">YOUR LEARNING SPACE</p><h1>Good to see you <span class="wave">✳</span></h1><p class="page-subtitle">The best way to learn Python? Build something real.</p></div>
-            <span class="date-chip" id="todayLabel"></span>
-          </div>
-          <section class="hero">
-            <div class="hero-content">
-              <span class="hero-tag">✦ LEARNING BY DOING</span>
-              <h2>From your first line to<br><em>real-world Python.</em></h2>
-              <p>Clear lessons. Executable projects. Honest feedback. A learning experience designed around skills you can actually use.</p>
-              <button id="heroContinue" class="button button-light" type="button">Continue learning <span aria-hidden="true">↗</span></button>
-            </div>
-            <div class="hero-illustration" aria-hidden="true">
-              <div class="hero-orbit orbit-a"></div><div class="hero-orbit orbit-b"></div>
-              <div class="floating-card code-preview"><div><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span><small>app.py</small></div><pre><span>def</span> greet(name):&#10;  <span>return</span> <b>f"Hello, {name}!"</b>&#10;&#10;print(greet(<b>"world"</b>))</pre><div class="output-check">✓ Hello, world!</div></div>
-              <div class="floating-tile tile-python">⌘<small>Python</small></div>
-              <div class="floating-tile tile-success">✓<small>Tests passed</small></div>
-            </div>
-          </section>
-          <div class="section-heading"><div><p class="eyebrow">YOUR DASHBOARD</p><h2>Learning at a glance</h2></div><a href="#/progress" class="text-link">View progress →</a></div>
-          <div id="metricGrid" class="metrics-grid"></div>
-          <div class="section-heading"><div><p class="eyebrow">YOUR ROADMAP</p><h2>Choose your learning path</h2></div><a href="#/courses" class="text-link">All lessons →</a></div>
-          <div id="overviewTracks" class="tracks-grid"></div>
-          <div class="bottom-grid">
-            <section class="panel next-panel"><p class="eyebrow">PICK UP WHERE YOU LEFT OFF</p><div id="nextLesson"></div></section>
-            <section class="panel principle-panel"><div class="principle-icon">✧</div><h3>Learn it. Build it. Prove it.</h3><p>Every lesson ends in a real coding challenge. Progress advances only after all checks pass.</p><a href="#/instructor" class="text-link">Our teaching approach →</a></section>
-          </div>
-        </section>
-        <section id="courses-view" class="view" aria-label="Learning paths">
-          <div class="page-heading"><p class="eyebrow">STRUCTURED CURRICULUM</p><h1>Learning paths</h1><p class="page-subtitle">Twelve practical lessons across three connected paths, designed to take you from Python fundamentals to a useful reporting tool.</p></div>
-          <div id="courseTracks" class="course-tracks"></div>
-        </section>
-        <section id="lesson-view" class="view" aria-label="Lesson">
-          <div id="lessonContent"></div>
-        </section>
-        <section id="studio-view" class="view" aria-label="Code studio">
-          <div class="page-heading studio-heading"><div><p class="eyebrow">INTERACTIVE WORKSPACE</p><h1>Code studio</h1><p class="page-subtitle">Write real Python, run it in your browser, and see exactly which requirements pass.</p></div><span class="lab-label">● LIVE LAB</span></div>
-          <div class="studio-grid">
-            <div class="studio-main">
-              <section class="panel task-panel"><div class="task-title-row"><span class="panel-icon">⌘</span><div><p class="eyebrow">CURRENT CHALLENGE</p><h2 id="studioTitle"></h2></div></div><p id="studioBrief"></p><div class="goal-line"><span>◎</span><span id="studioGoal"></span></div><div class="task-meta"><span id="studioLevel"></span><span id="studioTestCount"></span></div></section>
-              <div class="editor-panel">
-                <div class="editor-toolbar"><div class="file-tab">● &nbsp; solution.py <span class="file-dirty" title="Unsaved work is stored locally">●</span></div><span class="editor-shortcut">Ctrl / ⌘ + Enter to run</span></div>
-                <label class="sr-only" for="codeEditor">Python source code</label>
-                <textarea id="codeEditor" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-label="Python code editor"></textarea>
-                <div class="editor-actions"><span id="editorMessage" role="status">Your code stays in this browser.</span><div class="button-cluster"><button id="resetCode" type="button" class="button button-outline">Reset starter</button><button id="runCode" type="button" class="button button-primary">▶ &nbsp;Run tests</button><button id="stopCode" type="button" class="button button-danger" hidden>■ &nbsp;Stop</button></div></div>
-              </div>
-              <section class="panel results-panel"><div class="section-heading mini"><div><p class="eyebrow">AUTOMATED FEEDBACK</p><h2>Test results</h2></div><span id="testSummary" class="pill">Not run yet</span></div><div id="testResults" class="test-results" aria-live="polite"><div class="empty-results"><span>◇</span><strong>Ready when you are.</strong><p>Run your solution to see transparent, case-by-case feedback.</p></div></div></section>
-            </div>
-            <aside class="studio-aside">
-              <section class="panel"><p class="eyebrow">LEARNING OBJECTIVE</p><h3>What you'll practice</h3><ul id="studioConcepts" class="check-list"></ul></section>
-              <section class="panel"><p class="eyebrow">NEED A NUDGE?</p><h3>Guided hints</h3><p class="aside-help">Hints are optional. Try the problem first.</p><div id="hintList"></div><button id="showHint" type="button" class="button button-outline button-block">Reveal next hint</button></section>
-              <section class="panel insight-panel"><p class="eyebrow">ENGINE NOTE</p><h3>Real Python, in your browser</h3><p>The code runs locally via Pyodide in a dedicated web worker. It is not uploaded to our servers. Execution has a timeout; it's a learning tool, not a security sandbox.</p></section>
-            </aside>
-          </div>
-        </section>
-        <section id="progress-view" class="view" aria-label="Learning progress">
-          <div class="page-heading"><p class="eyebrow">YOUR ACHIEVEMENTS</p><h1>My progress</h1><p class="page-subtitle">A transparent record of completed coding challenges and quiz results, saved only in this browser.</p></div>
-          <div id="progressSummary" class="progress-summary"></div>
-          <section class="panel"><div class="section-heading mini"><div><p class="eyebrow">LESSON-BY-LESSON</p><h2>Skill evidence</h2></div><button id="downloadReport" class="button button-outline" type="button">↓ Download report</button></div><div id="progressRows"></div></section>
-          <div class="privacy-actions"><span>Private by default: browser-only storage, no account required.</span><div><button id="importProgress" type="button" class="button button-outline">Import progress</button><button id="clearProgress" type="button" class="button button-quiet">Clear my progress</button></div></div>
-          <input id="importInput" type="file" accept=".json,application/json" hidden>
-        </section>
-        <section id="instructor-view" class="view" aria-label="Instructor showcase">
-          <div class="page-heading"><p class="eyebrow">FOR TRAINERS & LEARNING TEAMS</p><h1>Built for meaningful learning</h1><p class="page-subtitle">PyQuest demonstrates Ali Jabbary's hands-on approach to technical education: make complex concepts approachable, connect them to practical outcomes, and verify understanding.</p></div>
-          <div class="instructor-hero"><div><span class="hero-tag">✦ EDUCATION × ENGINEERING</span><h2>Not another<br>slide-only course.</h2><p>Lessons lead to runnable code, explicit criteria, and learner-owned artifacts. The product itself is a working demonstration—not a mockup.</p><a class="button button-light" href="https://alijabbary.com" target="_blank" rel="noopener noreferrer">Explore Ali's work ↗</a></div><div class="instructor-art" aria-hidden="true"><div class="art-circle"><span>〈/〉</span><span>✓</span><span>↗</span></div></div></div>
-          <div class="instructor-cards">
-            <article class="panel"><span class="panel-icon">◈</span><h3>Hands-on instruction</h3><p>Live executable examples and guided coding tasks turn abstract concepts into observable behavior.</p></article>
-            <article class="panel"><span class="panel-icon">◎</span><h3>Visible competence</h3><p>Every lesson includes a concrete assessment and transparent pass/fail feedback for each input case.</p></article>
-            <article class="panel"><span class="panel-icon">◇</span><h3>Realistic applications</h3><p>Scenarios cover invoicing, customer data, support-ticket triage, sensor validation, KPIs, and reporting.</p></article>
-          </div>
-          <section class="panel instructor-note"><p class="eyebrow">DEMONSTRATION SCOPE</p><h3>What this academy does—and doesn't claim</h3><p>This is a public, self-paced technical learning demonstration. It does not represent an accredited programme, an LMS integration, evidence of employer contracts, or a remotely verified exam. Scores are client-side and can be modified locally. Custom live workshops and instructor-led programmes are separate services.</p></section>
-        </section>
-      </main>
-      <footer class="footer">© <span id="year"></span> <a href="https://alijabbary.com" target="_blank" rel="noopener noreferrer">Ali Jabbary</a><span class="footer-right">Python, made practical. ✳</span></footer>
+      </div>
     </div>
+  </header>
+
+  <div class="app-body" id="appBody">
+  <main id="main" tabindex="-1">
+    <!-- Lesson workspace -->
+    <section class="view workspace" id="lesson-view" aria-label="Lesson workspace">
+      <div class="problem-strip card">
+        <div class="track-picker">
+          <button class="btn btn-primary track-button" id="trackButton" type="button" aria-haspopup="listbox" aria-expanded="false">
+            <span id="trackButtonLabel">Python Basics</span>
+            <svg class="icon chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <ul class="menu track-menu" id="trackMenu" role="listbox" aria-label="Choose a track" hidden></ul>
+        </div>
+        <button class="icon-btn round" id="prevProblem" type="button" aria-label="Previous problem"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <nav class="chips" id="problemChips" aria-label="Problems in this track"></nav>
+        <button class="icon-btn round" id="nextProblem" type="button" aria-label="Next problem"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+
+      <article class="problem-panel card" id="problemPanel" aria-labelledby="problemTitle"></article>
+
+      <section class="editor-panel card" aria-label="Code editor and results">
+        <div class="panel-head">
+          <h2 class="panel-title"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg> Code editor</h2>
+          <div class="panel-actions">
+            <button class="btn btn-outline" id="toggleResults" type="button" aria-expanded="true" aria-controls="resultsPane">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg><span>Hide results</span>
+            </button>
+            <button class="btn btn-outline" id="resetCode" type="button">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg><span>Reset</span>
+            </button>
+            <button class="btn btn-danger" id="stopCode" type="button" hidden>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg><span>Stop</span>
+            </button>
+            <button class="btn btn-primary" id="runCode" type="button" title="Run code (Ctrl/⌘ + Enter)">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg><span>Run code</span>
+            </button>
+          </div>
+        </div>
+        <div class="editor-wrap">
+          <div class="code-editor" id="codeEditor"></div>
+          <p class="sr-only" id="editorHelp">Tab indents, Shift+Tab dedents, Ctrl or Command plus Enter runs the tests, Escape leaves the editor.</p>
+        </div>
+        <div class="results" id="resultsPane">
+          <div class="results-bar">
+            <div class="tabs" role="tablist" aria-label="Results">
+              <button role="tab" type="button" id="tab-tests" aria-controls="pane-tests" aria-selected="true" data-tab="tests">Test cases</button>
+              <button role="tab" type="button" id="tab-console" aria-controls="pane-console" aria-selected="false" data-tab="console" tabindex="-1">Console</button>
+              <button role="tab" type="button" id="tab-insights" aria-controls="pane-insights" aria-selected="false" data-tab="insights" tabindex="-1">Run insights</button>
+            </div>
+            <button class="btn btn-ghost" id="clearConsole" type="button">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 20H9l-5-5 10-10 7 7-6 6"/><path d="M14 18l-6-6"/></svg>Clear console
+            </button>
+          </div>
+          <div class="tab-pane" role="tabpanel" id="pane-tests" aria-labelledby="tab-tests"></div>
+          <div class="tab-pane" role="tabpanel" id="pane-console" aria-labelledby="tab-console" hidden><pre class="console" id="consoleOutput"></pre></div>
+          <div class="tab-pane" role="tabpanel" id="pane-insights" aria-labelledby="tab-insights" hidden></div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Curriculum -->
+    <section class="view page" id="curriculum-view" aria-labelledby="curriculumTitle" hidden></section>
+
+    <!-- How to use -->
+    <section class="view page" id="guide-view" aria-labelledby="guideTitle" hidden></section>
+  </main>
+
+  <!-- Tutor: docked panel on wide screens, slide-over drawer on smaller ones -->
+  <aside class="tutor card" id="tutorPanel" aria-label="Tutor">
+    <div class="tutor-head">
+      <span class="tutor-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01"/></svg></span>
+      <div>
+        <p class="eyebrow">Tutor · runs locally</p>
+        <h2 class="tutor-title">Ask me anything!</h2>
+      </div>
+      <button class="icon-btn tutor-close" id="tutorClose" type="button" aria-label="Close tutor"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="tutor-log" id="tutorLog" role="log" aria-live="polite" aria-relevant="additions"></div>
+    <div class="tutor-compose">
+      <button class="btn btn-primary btn-block" id="hintButton" type="button">Get hint</button>
+      <form class="ask" id="askForm">
+        <label class="sr-only" for="askInput">Ask a question about this problem</label>
+        <input id="askInput" type="text" autocomplete="off" maxlength="300" placeholder="Ask a question about this problem…">
+        <button class="btn btn-primary send" type="submit" aria-label="Send question"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+      </form>
+    </div>
+  </aside>
   </div>
-  <dialog id="resetDialog" class="confirm-dialog"><form method="dialog"><h2>Clear your local progress?</h2><p>This permanently deletes your completed lessons, quiz scores, and saved code from this browser. Export a report first if you want a copy.</p><div class="dialog-actions"><button value="cancel" class="button button-outline">Cancel</button><button id="confirmClear" value="confirm" class="button button-danger">Clear progress</button></div></form></dialog>
-  <div id="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="./src/app.mjs"></script>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <dialog class="dialog" id="confirmDialog">
+    <form method="dialog">
+      <h2 id="confirmTitle">Are you sure?</h2>
+      <p id="confirmBody"></p>
+      <div class="dialog-actions">
+        <button class="btn btn-outline" value="cancel">Cancel</button>
+        <button class="btn btn-danger" value="confirm" id="confirmOk">Confirm</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="dialog" id="renameDialog">
+    <form method="dialog">
+      <h2>Display name</h2>
+      <p>Shown in the header and your exported report. Stored only in this browser.</p>
+      <label class="field"><span class="sr-only">Display name</span><input id="renameInput" maxlength="40" autocomplete="nickname"></label>
+      <div class="dialog-actions">
+        <button class="btn btn-outline" value="cancel">Cancel</button>
+        <button class="btn btn-primary" value="save">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./src/main.js"></script>
 </body>
 </html>
