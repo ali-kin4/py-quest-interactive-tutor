@@ -61,6 +61,8 @@ async function main(){
   await page.screenshot({path:"screenshots/04-progress.png",fullPage:true});
   await page.setViewportSize({width:390,height:844});
   await page.goto("http://127.0.0.1:8000/#/overview",{waitUntil:"domcontentloaded"});
+  await page.waitForTimeout(400); // allow the responsive drawer transition to settle before visual capture
+  await check(await page.locator("#sidebar").evaluate(el=>getComputedStyle(el).visibility==="hidden"),"Closed mobile drawer should be invisible.");
   await page.screenshot({path:"screenshots/05-dashboard-mobile.png",fullPage:true});
   await check(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),"Horizontal overflow detected on mobile.");
   await page.locator("#menuToggle").click();
