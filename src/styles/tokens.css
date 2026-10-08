@@ -1,0 +1,163 @@
+/* Design tokens. Light is the default; dark applies via system preference
+   (unless the learner chose light) or an explicit data-theme="dark". */
+:root {
+  color-scheme: light;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --bg: #f4f5f8;
+  --surface: #ffffff;
+  --surface-2: #f7f7fa;
+  --surface-3: #eef0f5;
+  --border: #e5e7ee;
+  --border-strong: #d4d7e1;
+  --text: #15171f;
+  --text-2: #3f4453;
+  --muted: #6b7083;
+  --faint: #9a9fb0;
+
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-soft: #eef0ff;
+  --accent-border: #c7cbff;
+  --accent-text: #4338ca;
+  --accent-gradient: linear-gradient(135deg, #7c5cf6, #4f46e5);
+  --on-accent: #ffffff;
+
+  --success: #15803d;
+  --success-soft: #ecfdf3;
+  --success-border: #a6e9c0;
+  --danger: #c2261d;
+  --danger-soft: #fef1f0;
+  --danger-border: #f8c4bf;
+  --warning: #a15c07;
+  --warning-soft: #fff8e6;
+  --output-bg: #fffbea;
+  --output-border: #f6ecc2;
+
+  --diff-easy: #0369a1;
+  --diff-easy-bg: #e8f4fd;
+  --diff-medium: #15803d;
+  --diff-medium-bg: #ecfdf3;
+  --diff-hard: #b45309;
+  --diff-hard-bg: #fff5e6;
+
+  --tok-keyword: #0b4fd6;
+  --tok-def: #15171f;
+  --tok-string: #a31515;
+  --tok-comment: #2e7d32;
+  --tok-number: #098658;
+  --tok-builtin: #795e26;
+  --tok-constant: #0b4fd6;
+  --tok-decorator: #7c3aed;
+  --tok-op: #3f4453;
+  --tok-bracket: #7c3aed;
+
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.04);
+  --shadow: 0 1px 3px rgb(16 24 40 / 0.06), 0 6px 20px rgb(16 24 40 / 0.04);
+  --shadow-lg: 0 12px 40px rgb(16 24 40 / 0.16);
+  --focus: 0 0 0 3px rgb(79 70 229 / 0.35);
+  --header-h: 72px;
+  --gap: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0d0f15;
+    --surface: #151821;
+    --surface-2: #1a1e29;
+    --surface-3: #222736;
+    --border: #262b3a;
+    --border-strong: #343a4d;
+    --text: #eceef4;
+    --text-2: #c5c9d6;
+    --muted: #959bb0;
+    --faint: #6b7186;
+    --accent: #7c74ff;
+    --accent-hover: #918aff;
+    --accent-soft: #1f2040;
+    --accent-border: #3d3c7a;
+    --accent-text: #aaa5ff;
+    --accent-gradient: linear-gradient(135deg, #8b6cf7, #5b52ec);
+    --success: #4ade80;
+    --success-soft: #0f2a1b;
+    --success-border: #1e5a37;
+    --danger: #ff8a80;
+    --danger-soft: #2d1514;
+    --danger-border: #6b2a26;
+    --warning: #fbbf24;
+    --warning-soft: #2b2210;
+    --output-bg: #232011;
+    --output-border: #3a3418;
+    --diff-easy: #7dd3fc;
+    --diff-easy-bg: #0c2233;
+    --diff-medium: #4ade80;
+    --diff-medium-bg: #0f2a1b;
+    --diff-hard: #fbbf24;
+    --diff-hard-bg: #2b2210;
+    --tok-keyword: #569cd6;
+    --tok-def: #dcdcaa;
+    --tok-string: #ce9178;
+    --tok-comment: #6a9955;
+    --tok-number: #b5cea8;
+    --tok-builtin: #4ec9b0;
+    --tok-constant: #569cd6;
+    --tok-decorator: #c586c0;
+    --tok-op: #c5c9d6;
+    --tok-bracket: #da70d6;
+    --shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 12px 40px rgb(0 0 0 / 0.55);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d0f15;
+  --surface: #151821;
+  --surface-2: #1a1e29;
+  --surface-3: #222736;
+  --border: #262b3a;
+  --border-strong: #343a4d;
+  --text: #eceef4;
+  --text-2: #c5c9d6;
+  --muted: #959bb0;
+  --faint: #6b7186;
+  --accent: #7c74ff;
+  --accent-hover: #918aff;
+  --accent-soft: #1f2040;
+  --accent-border: #3d3c7a;
+  --accent-text: #aaa5ff;
+  --accent-gradient: linear-gradient(135deg, #8b6cf7, #5b52ec);
+  --success: #4ade80;
+  --success-soft: #0f2a1b;
+  --success-border: #1e5a37;
+  --danger: #ff8a80;
+  --danger-soft: #2d1514;
+  --danger-border: #6b2a26;
+  --warning: #fbbf24;
+  --warning-soft: #2b2210;
+  --output-bg: #232011;
+  --output-border: #3a3418;
+  --diff-easy: #7dd3fc;
+  --diff-easy-bg: #0c2233;
+  --diff-medium: #4ade80;
+  --diff-medium-bg: #0f2a1b;
+  --diff-hard: #fbbf24;
+  --diff-hard-bg: #2b2210;
+  --tok-keyword: #569cd6;
+  --tok-def: #dcdcaa;
+  --tok-string: #ce9178;
+  --tok-comment: #6a9955;
+  --tok-number: #b5cea8;
+  --tok-builtin: #4ec9b0;
+  --tok-constant: #569cd6;
+  --tok-decorator: #c586c0;
+  --tok-op: #c5c9d6;
+  --tok-bracket: #da70d6;
+  --shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 12px 40px rgb(0 0 0 / 0.55);
+}
