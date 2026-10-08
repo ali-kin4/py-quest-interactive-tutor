@@ -1,0 +1,13 @@
+{
+  "name": "pyquest-learning-academy",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static browser-based Python academy and instructor demonstration",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/app.mjs && node --check src/curriculum.mjs && node --check src/python-worker.mjs && node --test"
+  },
+  "engines": { "node": ">=20" },
+  "license": "MIT"
+}
