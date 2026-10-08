@@ -37,6 +37,7 @@
 .main-nav a {
   position: relative;
   padding: 8px 14px;
+  white-space: nowrap;
   border-radius: var(--radius-sm);
   color: var(--text-2);
   font-weight: 500;
@@ -80,17 +81,17 @@
   gap: var(--gap);
 }
 
-body[data-view="lesson"] .app-body {
+body[data-view="practice"] .app-body {
   height: calc(100dvh - var(--header-h));
 }
 
-body:not([data-view="lesson"]) .app-body,
+body:not([data-view="practice"]) .app-body,
 body.tutor-hidden .app-body {
   grid-template-columns: minmax(0, 1fr);
 }
 
-body:not([data-view="lesson"]) .tutor,
-body:not([data-view="lesson"]) .tutor-toggle,
+body:not([data-view="practice"]) .tutor,
+body:not([data-view="practice"]) .tutor-toggle,
 body.tutor-hidden .tutor {
   display: none;
 }
@@ -158,7 +159,7 @@ main {
 }
 
 @media (max-width: 1023px) {
-  body[data-view="lesson"] .app-body {
+  body[data-view="practice"] .app-body {
     height: auto;
   }
 
@@ -198,6 +199,11 @@ main {
 
   .main-nav a.active::after {
     bottom: 0;
+  }
+
+  .main-nav a {
+    padding: 8px 10px;
+    font-size: 14px;
   }
 
   /* Scoped selectors so these win over components.css, which loads later. */

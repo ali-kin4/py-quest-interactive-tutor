@@ -1,0 +1,31 @@
+name: Lesson or problem content
+description: A mistake, unclear explanation, wrong test, or a suggestion for a lesson or practice problem.
+labels: ["content"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of content?
+      options:
+        - Lesson text or example
+        - Lesson quiz
+        - Practice problem statement
+        - Practice problem test case
+        - Tutor hint or explanation
+        - Suggestion for new content
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Lesson or problem
+      description: The title or URL, for example "Lesson 7 · Repeating with Loops" or `#/practice/flatten`.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What should change, and why?
+      description: If a test is wrong, include the input, the expected value and what you believe it should be.
+    validations:
+      required: true

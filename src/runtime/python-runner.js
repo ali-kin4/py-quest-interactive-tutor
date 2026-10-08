@@ -63,17 +63,26 @@ export class PythonRunner {
   }
 
   /** Grade code against tests. Resolves with the harness report. */
-  async run(code, tests) {
+  run(code, tests) {
+    return this.#send({ type: "run", code, tests }, "Running tests…");
+  }
+
+  /** Run a code example as a script. Resolves with { stdout, error, elapsed_ms }. */
+  exec(code) {
+    return this.#send({ type: "exec", code }, "Running…");
+  }
+
+  async #send(message, label) {
     if (this.#pending) throw new Error("A run is already in progress.");
     await this.warmUp();
     const runId = this.#nextRunId++;
-    this.onStatus({ state: "running", message: "Running tests…" });
+    this.onStatus({ state: "running", message: label });
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         this.stop(`Stopped after ${RUN_TIMEOUT_MS / 1000}s — check for an infinite loop.`);
       }, RUN_TIMEOUT_MS);
       this.#pending = { runId, resolve, reject, timer };
-      this.#worker.postMessage({ type: "run", runId, code, tests });
+      this.#worker.postMessage({ ...message, runId });
     });
   }
 

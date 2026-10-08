@@ -1,4 +1,6 @@
 // Left column: the problem statement, rendered from curriculum data.
+import { href } from "../../app/router.js";
+import { lessonForProblem } from "../../data/syllabus.js";
 import { html, raw, richText } from "../dom.js";
 
 const section = (label, body) => html`<section class="spec"><h3 class="eyebrow">${label}</h3>${raw(body)}</section>`;
@@ -19,6 +21,11 @@ export function renderProblemPanel(el, problem, { solved }) {
         <p class="eyebrow session">≈ ${problem.minutes} minute session</p>
       </div>
     </header>
+    ${lessonForProblem[problem.id] ? raw(html`
+      <a class="learn-first" href="${href.learn(lessonForProblem[problem.id].id)}">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg>
+        <span><span class="eyebrow">Learn first</span>Lesson ${lessonForProblem[problem.id].number}: ${lessonForProblem[problem.id].title}</span>
+      </a>`) : ""}
     <div class="problem-body">
       ${raw(section("Summary", html`<p>${richText(problem.summary)}</p>`))}
       ${raw(section("Problem statement", html`<p>${richText(problem.statement)}</p>`))}

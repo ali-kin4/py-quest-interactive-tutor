@@ -59,6 +59,7 @@ test("answer routes intents", () => {
   assert.match(textOf(answer(problem, "What is a dictionary?", { hintLevel: 0 })), /Dictionaries/);
   assert.match(textOf(answer(problem, "show me an example", { hintLevel: 0 })), /count_vowels\("hello"\)/);
   assert.match(textOf(answer(problem, "asdfgh", { hintLevel: 0 })), /rule-based tutor/);
+  assert.match(textOf(answer(problem, "Why use a set for the vowels?", { hintLevel: 0 })), /Sets/, "a 'why' question about a concept is not a failure diagnosis");
 });
 
 test("glossary lookup prefers specific terms and ignores word fragments", () => {
@@ -66,4 +67,19 @@ test("glossary lookup prefers specific terms and ignores word fragments", () => 
   assert.equal(lookupConcept("what does modulo do").key, "modulus");
   assert.equal(lookupConcept("tell me about f-strings")?.key, "f-string");
   assert.equal(lookupConcept("pineapple"), null);
+});
+
+test("everyday words only match the glossary when they are the topic", () => {
+  assert.equal(lookupConcept("Why use a set for the vowels?").key, "sets");
+  assert.equal(lookupConcept("what is a for loop").key, "for");
+  assert.equal(lookupConcept("explain return").key, "return");
+  assert.equal(lookupConcept("can I return early if the list is empty"), null);
+  assert.equal(lookupConcept("what does strip do").key, "strip");
+});
+
+test("every concept tag on every problem has a glossary explanation", async () => {
+  const { problems } = await import("../../src/data/curriculum.js");
+  for (const p of problems) {
+    for (const concept of p.concepts) assert.ok(lookupConcept(`What is ${concept}?`), `${p.id}: no explanation for "${concept}"`);
+  }
 });

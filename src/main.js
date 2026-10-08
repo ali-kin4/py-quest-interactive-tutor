@@ -2,9 +2,11 @@
 import { createStore } from "./app/store.js";
 import { parseRoute } from "./app/router.js";
 import { problems } from "./data/curriculum.js";
+import { lessons } from "./data/syllabus.js";
 import { PythonRunner } from "./runtime/python-runner.js";
 import { $, $$, download, toast } from "./ui/dom.js";
-import { renderCurriculum } from "./ui/views/curriculum.js";
+import { createLearnView } from "./ui/views/learn.js";
+import { renderSyllabus } from "./ui/views/syllabus.js";
 import { renderGuide } from "./ui/views/guide.js";
 import { createWorkspace } from "./ui/views/workspace.js";
 
@@ -50,7 +52,9 @@ function renderUser() {
   $("#userName").textContent = name;
   $("#userAvatar").textContent = name.trim()[0]?.toUpperCase() ?? "L";
   const solved = store.solvedCount();
-  $("#menuProgress").innerHTML = `<strong>${solved} / ${problems.length}</strong> problems solved<div class="meter"><span style="width:${Math.round((100 * solved) / problems.length)}%"></span></div>`;
+  const done = store.lessonsDone();
+  const pct = Math.round((100 * (solved + done)) / (problems.length + lessons.length));
+  $("#menuProgress").innerHTML = `<strong>${done} / ${lessons.length}</strong> lessons · <strong>${solved} / ${problems.length}</strong> problems<div class="meter"><span style="width:${pct}%"></span></div>`;
 }
 function setMenu(open) {
   menu.hidden = !open;
@@ -105,7 +109,7 @@ $("#importInput").addEventListener("change", async (event) => {
   try {
     if (file.size > 2_000_000) throw new Error("File is too large.");
     store.importJSON(await file.text());
-    if (document.body.dataset.view === "lesson") workspace.show(workspace.problem.id, { force: true });
+    if (document.body.dataset.view === "practice") workspace.show(workspace.problem.id, { force: true });
     toast("Progress imported.");
   } catch (err) {
     toast(`Import failed: ${err.message}`);
@@ -114,9 +118,13 @@ $("#importInput").addEventListener("change", async (event) => {
 
 // ----- Views & routing -----------------------------------------------------------------------
 const workspace = createWorkspace({ store, runner, confirm });
+const learn = createLearnView({ store, runner });
 
 function route() {
-  const { view, problemId } = parseRoute(location.hash, store.state.lastProblem);
+  const { view, lessonId, problemId } = parseRoute(location.hash, {
+    lesson: store.state.lastLesson,
+    problem: store.state.lastProblem,
+  });
   for (const el of $$(".view")) el.hidden = el.id !== `${view}-view`;
   document.body.dataset.view = view;
   for (const link of $$("[data-nav]")) {
@@ -125,28 +133,32 @@ function route() {
     if (active) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
   }
-  if (view === "lesson") workspace.show(problemId);
-  if (view === "curriculum") {
-    renderCurriculum($("#curriculum-view"), store);
-    document.title = "Curriculum | PyQuest";
+  if (view === "learn") learn.show(lessonId);
+  if (view === "practice") workspace.show(problemId);
+  if (view === "syllabus") {
+    renderSyllabus($("#syllabus-view"), store);
+    document.title = "Syllabus | PyQuest";
   }
   if (view === "guide") {
     renderGuide($("#guide-view"));
     document.title = "How to use | PyQuest";
   }
-  if (view !== "lesson") window.scrollTo(0, 0);
+  if (view === "syllabus" || view === "guide") window.scrollTo(0, 0);
 }
 
+// Re-render whatever is on screen when progress changes (quiz answers, runs, import, reset).
 store.subscribe(() => {
   renderUser();
-  if (document.body.dataset.view === "lesson") workspace.refresh();
-  if (document.body.dataset.view === "curriculum") renderCurriculum($("#curriculum-view"), store);
+  const view = document.body.dataset.view;
+  if (view === "learn") learn.refresh();
+  if (view === "practice") workspace.refresh();
+  if (view === "syllabus") renderSyllabus($("#syllabus-view"), store);
 });
 
 window.addEventListener("hashchange", route);
 renderUser();
 route();
 
-// Start loading Python while the learner reads the problem, without blocking first paint.
+// Start loading Python while the learner reads, without blocking first paint.
 const idle = window.requestIdleCallback ?? ((fn) => setTimeout(fn, 1200));
 idle(() => runner.warmUp().catch(() => {}));

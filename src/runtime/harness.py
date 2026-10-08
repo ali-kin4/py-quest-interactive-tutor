@@ -102,3 +102,21 @@ def _pyquest_run(source, tests_json):
 
     report["elapsed_ms"] = round((time.perf_counter() - started) * 1000, 2)
     return json.dumps(report)
+
+
+def _pyquest_exec(source):
+    """Run a code example like a script and capture what it prints."""
+    report = {"stdout": "", "error": None, "elapsed_ms": 0}
+    started = time.perf_counter()
+    out = io.StringIO()
+    try:
+        code = compile(source, _LEARNER_FILE, "exec")
+        with contextlib.redirect_stdout(out):
+            exec(code, _fresh_namespace())
+    except SyntaxError as exc:
+        report["error"] = {"type": type(exc).__name__, "message": _clip(exc.msg), "line": exc.lineno}
+    except Exception as exc:  # noqa: BLE001
+        report["error"] = _learner_error(exc)
+    report["stdout"] = _clip(out.getvalue())
+    report["elapsed_ms"] = round((time.perf_counter() - started) * 1000, 2)
+    return json.dumps(report)

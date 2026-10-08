@@ -19,14 +19,19 @@ function init() {
       }),
     ]);
     pyodide.runPython(harness);
-    return { pyodide, run: pyodide.globals.get("_pyquest_run"), version: pyodide.version };
+    return {
+      pyodide,
+      run: pyodide.globals.get("_pyquest_run"),
+      exec: pyodide.globals.get("_pyquest_exec"),
+      version: pyodide.version,
+    };
   })();
   return enginePromise;
 }
 
 self.onmessage = async ({ data = {} }) => {
   const { type, runId } = data;
-  if (type !== "init" && type !== "run") return;
+  if (type !== "init" && type !== "run" && type !== "exec") return;
   try {
     const engine = await init();
     if (type === "init") {
@@ -34,7 +39,7 @@ self.onmessage = async ({ data = {} }) => {
       return;
     }
     const source = String(data.code ?? "").slice(0, 20000);
-    const report = JSON.parse(engine.run(source, JSON.stringify(data.tests ?? [])));
+    const report = JSON.parse(type === "exec" ? engine.exec(source) : engine.run(source, JSON.stringify(data.tests ?? [])));
     postMessage({ type: "report", runId, report });
   } catch (err) {
     postMessage({ type: type === "init" ? "init-error" : "run-error", runId, error: String(err?.message ?? err) });

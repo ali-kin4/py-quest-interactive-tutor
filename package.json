@@ -1,15 +1,17 @@
 {
   "name": "pyquest",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "type": "module",
-  "description": "Browser-based Python practice workspace with real Python, instant tests and a local tutor.",
+  "description": "Browser-based Python course: guided lessons, real Python, instant tests and a local tutor.",
   "scripts": {
     "start": "node scripts/serve.mjs",
     "test": "node --test \"tests/unit/*.test.mjs\"",
     "verify:solutions": "node scripts/verify-solutions.mjs",
+    "verify:lessons": "node scripts/verify-lessons.mjs",
     "test:e2e": "node tests/e2e/smoke.mjs",
-    "check": "npm test && npm run verify:solutions"
+    "check": "npm test && npm run verify:solutions && npm run verify:lessons",
+    "screenshots": "node scripts/capture-screenshots.mjs"
   },
   "engines": {
     "node": ">=20"

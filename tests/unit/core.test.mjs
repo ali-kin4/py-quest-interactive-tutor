@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { parseRoute } from "../../src/app/router.js";
 import { createStore, sanitize, STORAGE_KEY } from "../../src/app/store.js";
+import { lessons } from "../../src/data/syllabus.js";
 import { escapeHTML, html, raw, richText } from "../../src/ui/dom.js";
 import { highlightPython } from "../../src/ui/highlight.js";
 
@@ -11,12 +12,17 @@ const memoryStorage = () => {
   return { getItem: (k) => data.get(k) ?? null, setItem: (k, v) => data.set(k, String(v)), data };
 };
 
-test("router resolves lessons, pages and unknown routes", () => {
-  assert.deepEqual(parseRoute("#/lesson/two-sum", "fizzbuzz"), { view: "lesson", problemId: "two-sum" });
-  assert.deepEqual(parseRoute("#/lesson/nope", "fizzbuzz"), { view: "lesson", problemId: "fizzbuzz" });
-  assert.deepEqual(parseRoute("#/curriculum", "fizzbuzz"), { view: "curriculum" });
-  assert.deepEqual(parseRoute("", "fizzbuzz"), { view: "lesson", problemId: "fizzbuzz" });
-  assert.deepEqual(parseRoute("#/admin", "fizzbuzz"), { view: "lesson", problemId: "fizzbuzz" });
+test("router resolves lessons, practice, pages and legacy links", () => {
+  const fb = { lesson: "strings", problem: "fizzbuzz" };
+  assert.deepEqual(parseRoute("#/learn/loops", fb), { view: "learn", lessonId: "loops" });
+  assert.deepEqual(parseRoute("#/learn/nope", fb), { view: "learn", lessonId: "strings" });
+  assert.deepEqual(parseRoute("#/practice/two-sum", fb), { view: "practice", problemId: "two-sum" });
+  assert.deepEqual(parseRoute("#/practice", fb), { view: "practice", problemId: "fizzbuzz" });
+  assert.deepEqual(parseRoute("#/lesson/two-sum", fb), { view: "practice", problemId: "two-sum" });
+  assert.deepEqual(parseRoute("#/curriculum", fb), { view: "syllabus" });
+  assert.deepEqual(parseRoute("#/syllabus", fb), { view: "syllabus" });
+  assert.deepEqual(parseRoute("", fb), { view: "learn", lessonId: "strings" });
+  assert.deepEqual(parseRoute("#/admin", fb), { view: "learn", lessonId: "strings" });
 });
 
 test("store records runs, solves once, and persists", () => {
@@ -34,6 +40,17 @@ test("store records runs, solves once, and persists", () => {
   assert.equal(reloaded.state.drafts.fizzbuzz, "print(1)");
 });
 
+test("store completes a lesson only when every quiz answer is right", () => {
+  const store = createStore(memoryStorage());
+  const lesson = lessons[0];
+  lesson.quiz.forEach((q, i) => store.answerQuiz(lesson.id, i, i === 0 ? (q.answer + 1) % 4 : q.answer));
+  assert.equal(store.isLessonDone(lesson.id), false);
+  store.answerQuiz(lesson.id, 0, lesson.quiz[0].answer);
+  assert.equal(store.isLessonDone(lesson.id), true);
+  store.markLessonDone(lessons[1].id);
+  assert.equal(store.lessonsDone(), 2);
+});
+
 test("store sanitizes untrusted imports", () => {
   const state = sanitize({
     learner: "  <b>Ada</b>  ",
@@ -41,7 +58,11 @@ test("store sanitizes untrusted imports", () => {
     lastProblem: "missing",
     progress: { fizzbuzz: { attempts: "3", solved: "yes", hintsUsed: -4 }, unknown: { solved: true } },
     drafts: { fizzbuzz: 42, "two-sum": "x = 1" },
+    lessons: { loops: { completed: true, quiz: { 0: 2, 1: 9, 99: 1 } }, nope: { completed: true } },
+    lastLesson: "nope",
   });
+  assert.deepEqual(state.lessons, { loops: { completed: true, completedAt: null, quiz: { 0: 2 } } });
+  assert.equal(state.lastLesson, "hello-python");
   assert.equal(state.learner, "<b>Ada</b>");
   assert.equal(state.theme, "system");
   assert.equal(state.lastProblem, "greet-customer");
@@ -82,7 +103,7 @@ test("highlighter escapes code and classifies tokens", () => {
 
 test("page shell keeps required landmarks and controls", () => {
   const page = readFileSync(new URL("../../index.html", import.meta.url), "utf8");
-  for (const id of ["lesson-view", "curriculum-view", "guide-view", "codeEditor", "runCode", "stopCode", "problemChips", "tutorPanel", "hintButton", "askForm", "importInput"]) {
+  for (const id of ["learn-view", "practice-view", "syllabus-view", "guide-view", "codeEditor", "runCode", "stopCode", "problemChips", "tutorPanel", "hintButton", "askForm", "importInput"]) {
     assert.match(page, new RegExp(`id="${id}"`), `missing #${id}`);
   }
   assert.match(page, /class="skip-link"/);

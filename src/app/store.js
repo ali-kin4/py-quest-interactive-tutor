@@ -1,6 +1,7 @@
 // Local-first learner state. Everything lives in localStorage under one key and
 // can be exported/imported as JSON. Nothing is sent anywhere.
 import { problemById, problems } from "../data/curriculum.js";
+import { lessonById, lessons } from "../data/syllabus.js";
 
 export const STORAGE_KEY = "pyquest-workspace-v2";
 const isRecord = (v) => !!v && typeof v === "object" && !Array.isArray(v);
@@ -10,7 +11,9 @@ export const freshState = () => ({
   learner: "Learner",
   theme: "system",
   lastProblem: problems[0].id,
+  lastLesson: lessons[0].id,
   progress: {}, // id -> { attempts, solved, solvedAt, hintsUsed, bestPassed }
+  lessons: {}, // id -> { completed, completedAt, quiz: { questionIndex: chosenOption } }
   drafts: {}, // id -> code
 });
 
@@ -21,6 +24,20 @@ export function sanitize(raw) {
   if (typeof raw.learner === "string" && raw.learner.trim()) state.learner = raw.learner.trim().slice(0, 40);
   if (["light", "dark", "system"].includes(raw.theme)) state.theme = raw.theme;
   if (problemById[raw.lastProblem]) state.lastProblem = raw.lastProblem;
+  if (lessonById[raw.lastLesson]) state.lastLesson = raw.lastLesson;
+  for (const [id, entry] of Object.entries(isRecord(raw.lessons) ? raw.lessons : {})) {
+    const lesson = lessonById[id];
+    if (!lesson || !isRecord(entry)) continue;
+    const quiz = {};
+    for (const [q, choice] of Object.entries(isRecord(entry.quiz) ? entry.quiz : {})) {
+      if (lesson.quiz[q] && Number.isInteger(choice) && choice >= 0 && choice < 4) quiz[q] = choice;
+    }
+    state.lessons[id] = {
+      completed: entry.completed === true,
+      completedAt: typeof entry.completedAt === "string" ? entry.completedAt : null,
+      quiz,
+    };
+  }
   for (const [id, entry] of Object.entries(isRecord(raw.progress) ? raw.progress : {})) {
     if (!problemById[id] || !isRecord(entry)) continue;
     state.progress[id] = {
@@ -86,6 +103,30 @@ export function createStore(storage = globalThis.localStorage) {
         }
         s.lastProblem = id;
       });
+    },
+    lessonOf: (id) => state.lessons[id] ?? { completed: false, completedAt: null, quiz: {} },
+    isLessonDone: (id) => state.lessons[id]?.completed === true,
+    lessonsDone: () => lessons.filter((l) => state.lessons[l.id]?.completed).length,
+    /** Record a quiz answer; a lesson completes once every question is answered correctly. */
+    answerQuiz(lessonId, questionIndex, choice) {
+      return store.update((s) => {
+        const e = (s.lessons[lessonId] ??= { completed: false, completedAt: null, quiz: {} });
+        e.quiz[questionIndex] = choice;
+        const lesson = lessonById[lessonId];
+        if (!e.completed && lesson.quiz.every((q, i) => e.quiz[i] === q.answer)) {
+          e.completed = true;
+          e.completedAt = new Date().toISOString();
+        }
+      });
+    },
+    markLessonDone(lessonId) {
+      return store.update((s) => {
+        const e = (s.lessons[lessonId] ??= { completed: false, completedAt: null, quiz: {} });
+        if (!e.completed) Object.assign(e, { completed: true, completedAt: new Date().toISOString() });
+      });
+    },
+    visitLesson(lessonId) {
+      return store.update((s) => (s.lastLesson = lessonId), { silent: true });
     },
     recordHint(id) {
       return store.update(() => (entry(id).hintsUsed += 1), { silent: true });
