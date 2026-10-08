@@ -220,7 +220,9 @@ function ensureWorker() {
   workerTimer = setTimeout(() => stopWorker("Python engine loading timed out. Check your internet connection."),90000);
   worker.addEventListener("message",event => {
     const payload = event.data ?? {};
-    if (payload.type === "ready") {
+    if (payload.type === "init_error") {
+      stopWorker(payload.error || "Python failed to initialize.");
+    } else if (payload.type === "ready") {
       if (workerTimer) clearTimeout(workerTimer);
       workerTimer = null;
       setRuntimeStatus("Python ready","ready");
@@ -239,6 +241,7 @@ function ensureWorker() {
     event.preventDefault();
     stopWorker("Python engine failed to load or execute.");
   });
+  worker.postMessage({type:"init"});
   return readyPromise;
 }
 async function executePython(code,tests) {
