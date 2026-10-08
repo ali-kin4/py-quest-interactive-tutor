@@ -106,7 +106,7 @@ function renderLesson(id) {
       '<article class="panel lesson-content-card"><p class="eyebrow">UNDERSTAND</p><h2>The idea</h2><p>' + safe(lesson.explanation) + '</p><div class="concept-tags">' + lesson.concepts.map(c => '<span>' + safe(c) + '</span>').join("") + '</div></article>' +
       '<article class="panel lesson-content-card"><p class="eyebrow">SEE IT IN ACTION</p><h2>A practical example</h2><pre class="code-example" id="lessonExample"></pre></article>' +
       '<article class="panel lesson-content-card"><p class="eyebrow">CHECK YOUR UNDERSTANDING</p><h2>' + safe(lesson.quiz.question) + '</h2><div id="quizWrap">' + quizMarkup(lesson) + '</div></article>' +
-    '</div><aside><article class="panel lesson-aside-card"><p class="eyebrow">APPLY YOUR SKILL</p><h3>' + safe(lesson.exercise.title) + '</h3><p>' + safe(lesson.exercise.brief) + '</p><ul><li>' + lesson.exercise.tests.length + ' transparent checks</li><li>Run actual Python in browser</li><li>' + (isCompleted(lesson.id) ? "Challenge passed ✓" : "Finish to earn completion") + '</li></ul><button id="launchChallenge" class="button button-primary button-block" type="button">' + (isCompleted(lesson.id) ? "Review your work" : "Start coding challenge") + ' ↗</button></article><article class="panel lesson-aside-card lesson-action"><p class="eyebrow">WHAT'S NEXT?</p><h3>Build something useful</h3><p>Take the concept into the code studio, test your solution, and inspect the cases that need another try.</p></article></aside></div>';
+    '</div><aside><article class="panel lesson-aside-card"><p class="eyebrow">APPLY YOUR SKILL</p><h3>' + safe(lesson.exercise.title) + '</h3><p>' + safe(lesson.exercise.brief) + '</p><ul><li>' + lesson.exercise.tests.length + ' transparent checks</li><li>Run actual Python in browser</li><li>' + (isCompleted(lesson.id) ? "Challenge passed ✓" : "Finish to earn completion") + '</li></ul><button id="launchChallenge" class="button button-primary button-block" type="button">' + (isCompleted(lesson.id) ? "Review your work" : "Start coding challenge") + ' ↗</button></article><article class="panel lesson-aside-card lesson-action"><p class="eyebrow">NEXT UP</p><h3>Build something useful</h3><p>Take the concept into the code studio, test your solution, and inspect the cases that need another try.</p></article></aside></div>';
   $("#lessonExample").textContent = lesson.example;
   $("#launchChallenge").addEventListener("click", () => go("studio/" + lesson.id));
   $$("#quizWrap [data-choice]").forEach(button => button.addEventListener("click", () => {
@@ -373,8 +373,9 @@ function bindEvents() {
   });
   $("#codeEditor").addEventListener("input",() => {
     const id=currentLessonId;
+    const value=$("#codeEditor").value;
     clearTimeout(draftTimeout);
-    draftTimeout=setTimeout(() => {state.drafts[id]=$("#codeEditor").value;persist();},350);
+    draftTimeout=setTimeout(() => {state.drafts[id]=value;persist();},350);
   });
   $("#codeEditor").addEventListener("keydown",event=>{
     if (event.key==="Tab") {
