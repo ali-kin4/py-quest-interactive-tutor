@@ -1,0 +1,464 @@
+{
+  "sampling": {
+    "goal": "Distinguish a population parameter from a sample statistic, compute unbiased sample variability, and explain why repeated samples produce different estimates.",
+    "explore": [
+      [
+        "Think of a sampling experiment",
+        "Imagine a production line that makes thousands of identical-looking bolts. You cannot destructively test every bolt, so you select a sample. The population is the set you want to make a claim about; the sample is the set you actually observed. A sample is only informative about its intended population if its selection mechanism avoids systematic bias. A perfectly calculated mean from only unusually strong bolts will still be a poor estimate of the production-line mean."
+      ],
+      [
+        "Parameter, estimator, estimate",
+        "The population mean μ and variance σ² are fixed (though usually unknown) properties of the population model. The sample mean x̄ is a statistic: a rule computed from random observations. Before taking the sample it is a random variable; after measuring the bolts, x̄=101 MPa is a numerical estimate. The sampling distribution describes how the statistic varies over hypothetical repetitions. The standard error of x̄ is σ/√n when the observations are independent and have common finite variance."
+      ],
+      [
+        "Why sample variance uses n−1",
+        "The deviations from the sample mean always sum to zero, which leaves only n−1 freely varying deviations. For independent observations from the same population, dividing the sum of squared sample deviations by n−1 makes the conventional sample variance unbiased for σ². Do not confuse this finite-sample correction with a claim that every estimate is accurate: even an unbiased estimator can have substantial variance."
+      ]
+    ],
+    "steps": [
+      "Write the intended population and sampling unit; decide whether any selection or measurement bias could distort the sample.",
+      "Count n, compute the arithmetic mean, and keep original units.",
+      "Subtract the mean from each observation, square the deviations, sum, then divide by n−1 for sample variance.",
+      "Check: variance is nonnegative and in squared units, while the sample standard deviation √s² has the original measurement units."
+    ],
+    "decision": "Asked about a population property based on measured observations? Estimate it with sample statistics; asked about estimator precision? Use its sampling distribution/standard error instead.",
+    "recall": [
+      "What is random: the population mean μ or the sample mean before data collection?",
+      "Why does the unbiased sample variance divide by n−1?",
+      "How do standard deviation and standard error answer different questions?"
+    ],
+    "challenge": [
+      "Five readings are 6, 8, 10, 12, 14 kN. Compute x̄, s² and s. Explain whether s is the same as the uncertainty in x̄.",
+      "x̄=10 kN; squared deviations sum to 40, so s²=40/4=10 kN² and s≈3.162 kN. Estimated standard error of x̄ is s/√5≈1.414 kN, a different quantity."
+    ]
+  },
+  "histograms": {
+    "goal": "Build and critique an empirical histogram, identify plausible distribution families, and explain why a visual match does not prove a probabilistic model.",
+    "explore": [
+      [
+        "What a histogram actually measures",
+        "A histogram estimates how observations are distributed across intervals. With equal-width bins, raw count and relative frequency communicate nearly the same shape. With unequal bin widths, the area of a density histogram—not simply the bar height—must represent the fraction of observations. Report the sample size, bin boundaries and measurement units so the graphic is interpretable."
+      ],
+      [
+        "Choosing a candidate by mechanism",
+        "Symmetric deviations from many small perturbations suggest a normal model; strictly positive, multiplicative variation suggests lognormal; time-to-failure can motivate Weibull or exponential. Those are physical stories, not proofs. Examine domain restrictions: a normal distribution assigns a nonzero probability to negative values, which may be unacceptable for a strictly positive quantity near zero."
+      ],
+      [
+        "Why different binning changes the answer",
+        "Too few bins conceal multimodality or tail structure; too many bins expose sampling noise. Inspect several reasonable bin widths and compare an empirical CDF or a probability plot. Then fit parameters and evaluate fit quality separately; do not use the same graphic as both an unexplained model selection and a definitive fit test."
+      ]
+    ],
+    "steps": [
+      "Confirm measurement units and nonmissing observations; calculate total n.",
+      "Choose meaningful bins and decide whether counts, proportions, or probability density are displayed.",
+      "If unequal bin widths, use count/(n × bin width) so total histogram area is approximately one.",
+      "List plausible model families from support, skew, tails, and physical mechanism; follow with quantitative diagnostics."
+    ],
+    "decision": "A histogram is exploratory evidence. Use it to propose a model, then estimate parameters and compare probability plots or goodness-of-fit tests.",
+    "recall": [
+      "What must sum to one: histogram relative frequencies or density heights?",
+      "Can a bell-shaped histogram prove normality?",
+      "Why is the bin width particularly important when tail behavior drives safety?"
+    ],
+    "challenge": [
+      "Bin counts are 4, 8, 12, and 6 for n=30 equal-width bins of width 2 MPa. Find relative frequency and density of bin 3.",
+      "Relative frequency 12/30=0.4; estimated density height 12/(30×2)=0.2 MPa⁻¹. Across all bins, density height × width sums to 1."
+    ]
+  },
+  "normal_plot": {
+    "goal": "Construct normal probability plotting coordinates, read intercept/slope, and diagnose when departures from a straight line matter.",
+    "explore": [
+      [
+        "Why normal paper becomes a straight line",
+        "The normal CDF satisfies F(x)=Φ((x−μ)/σ). Rearranging, Φ⁻¹(F(x))=(x−μ)/σ, which is linear in x. Thus plotting ordered observations against theoretical standard-normal scores reveals an approximately straight line when the normal model fits. Different software reverses the axes, so define exactly which quantity is on each axis before interpreting the slope."
+      ],
+      [
+        "From data to plotting positions",
+        "Sort observations x(1)≤...≤x(n). Approximate each observation’s cumulative position with pᵢ=(i−0.5)/n, then transform it to zᵢ=Φ⁻¹(pᵢ). A conventional plot of xᵢ against zᵢ has x≈μ+σz; the intercept at z=0 estimates μ and the slope estimates σ. Plotting positions are approximations; for tiny samples tail values are highly unstable."
+      ],
+      [
+        "Interpreting curvature carefully",
+        "A smooth curve, asymmetric bend, cluster, or extreme points can indicate skewness, heavy tails, mixtures, or measurement issues. Some apparent curvature is expected by chance. A formal goodness-of-fit diagnostic and subject-matter judgment should accompany the plot, especially when a tail probability controls reliability."
+      ]
+    ],
+    "steps": [
+      "Sort the observations and assign an index i=1,…,n.",
+      "Choose and state a plotting-position formula; obtain zᵢ=Φ⁻¹(pᵢ) from a table/software.",
+      "Plot observation xᵢ versus zᵢ; inspect straightness, outliers, and tail departures.",
+      "If approximately linear, fit x=a+bz, interpret a≈μ and b≈σ in x-units; validate model before use."
+    ],
+    "decision": "Straight on normal paper suggests a plausible normal distribution, not a proof. Check which axis is z before extracting slope and intercept.",
+    "recall": [
+      "Why does the normal CDF turn into a straight line after Φ⁻¹?",
+      "If x is plotted vertically against z horizontally, what are slope and intercept?",
+      "Which region should receive special scrutiny for rare failure: center or tails?"
+    ],
+    "challenge": [
+      "A normal probability plot fitted as x=72+6z (MPa). Estimate μ, σ, and the 5th percentile using z₀.₀₅≈−1.645.",
+      "μ≈72 MPa, σ≈6 MPa, fifth percentile x₀.₀₅≈72−1.645×6=62.13 MPa. This relies on the model being suitable in the lower tail."
+    ]
+  },
+  "lognormal_plot": {
+    "goal": "Recognize how lognormal, Gumbel and Weibull probability-plot transformations differ and why axis transformations depend on the distribution.",
+    "explore": [
+      [
+        "Lognormal means normality after a log",
+        "If a strictly positive variable X is lognormal, Y=ln X is normal. Sort positive observations, compute ln(xᵢ), and use normal probability plotting positions for Y. This is not the same as treating μX and σX as the parameters of ln X: the log-scale parameters are μY and σY. The back-transformed median is exp(μY), not generally the original-scale mean."
+      ],
+      [
+        "Weibull linearization",
+        "For a two-parameter Weibull distribution F(x)=1−exp[−(x/η)^k] for x≥0, take ln[−ln(1−F(x))]=k ln x−k ln η. Therefore, a plot of y=ln[−ln(1−pᵢ)] against ln xᵢ has slope k (shape) and intercept −k ln η; solve η=exp(−intercept/k). This works only for positive x and probabilities strictly between zero and one."
+      ],
+      [
+        "Extreme-value / Gumbel plotting",
+        "For the standard Gumbel maximum model F(x)=exp{−exp[−(x−u)/a]}, transforming −ln[−ln F(x)] gives (x−u)/a. Extremes arise from a different data-generating mechanism than fatigue lifetime, so do not treat Gumbel and Weibull as interchangeable merely because both can give straight transformed plots."
+      ]
+    ],
+    "steps": [
+      "Identify whether measurements are positive, minima/maxima, waiting times, or ordinary deviations.",
+      "Sort data and choose plotting positions pᵢ strictly within (0,1).",
+      "Apply the correct transform: ln x for lognormal, double-log CDF transform for Weibull/Gumbel.",
+      "Fit the line, decode shape and scale in the chosen orientation, and investigate tails and physical interpretation."
+    ],
+    "decision": "Pick a family from support and mechanism before transforming; different straight-line plots encode different parameters.",
+    "recall": [
+      "What variable becomes normal when X is lognormal?",
+      "In y=ln[−ln(1−F)] versus ln x, what does the Weibull slope represent?",
+      "Why does a perfect-looking straight line in the center not guarantee tail accuracy?"
+    ],
+    "challenge": [
+      "A Weibull transformed plot fits y=2 ln x−9.21034. Find k and η approximately.",
+      "Slope k=2. Since −k ln η=−9.21034, ln η=4.60517 and η≈100 in the original x units."
+    ]
+  },
+  "chisq_gof": {
+    "goal": "Carry out grouped chi-square fit testing with expected counts, estimated-parameter correction, and a careful interpretation of a p-value.",
+    "explore": [
+      [
+        "Why the statistic compares counts",
+        "The chi-square goodness-of-fit test compares Oⱼ, the observed count in each bin, to Eⱼ=n pⱼ, the count expected from a specified model. (Oⱼ−Eⱼ)²/Eⱼ is larger for discrepancies that are big relative to expected frequency. Add those contributions across bins to get χ². If the model assigns nearly zero probability to an occupied bin, check grouping and whether the model is implausible rather than blindly dividing by tiny E."
+      ],
+      [
+        "Degrees of freedom are not always k−1",
+        "Counts sum to n, leaving k−1 independent cells; estimating p model parameters using the same data usually reduces the asymptotic degrees of freedom to k−1−p. Some parameter-fitting and grouping situations require special treatment; do not blindly use this subtraction without knowing how parameters were estimated. Group sparse bins so expected counts are reasonably large (often at least about 5 as a rule of thumb)."
+      ],
+      [
+        "What rejection means",
+        "Choose significance α before checking the data. Under the test assumptions, a very large χ² relative to a χ² reference distribution leads to rejection of the specified model. Failure to reject is not proof that the model is true, and a p-value is not the posterior probability that the model is correct. Binning loses information compared with an ungrouped empirical CDF."
+      ]
+    ],
+    "steps": [
+      "State H₀: observations follow the specified probability model; H₁: they do not.",
+      "Compute bin probabilities from the fully specified/fitted model, then Eⱼ=npⱼ; combine sparse bins appropriately.",
+      "Calculate and sum (Oⱼ−Eⱼ)²/Eⱼ and determine justified reference degrees of freedom.",
+      "Compare to a critical value or p-value; make a decision without claiming a model was proved."
+    ],
+    "decision": "Grouped frequencies + model probabilities → χ² fit test, but check expected counts, how parameters were estimated, and df.",
+    "recall": [
+      "Why is Eⱼ in the denominator?",
+      "When is df approximately k−1−p rather than k−1?",
+      "Does failing to reject H₀ establish the candidate distribution is correct?"
+    ],
+    "challenge": [
+      "Observed bin counts 18, 22, 10; expected 15, 20, 15. Calculate χ², before discussing df.",
+      "χ²=(18−15)²/15+(22−20)²/20+(10−15)²/15=9/15+4/20+25/15≈2.467. Need model/parameter information to choose df."
+    ]
+  },
+  "ks_test": {
+    "goal": "Construct and interpret the empirical CDF distance D, distinguish fully specified and fitted-null calibrations, and compare K–S with χ².",
+    "explore": [
+      [
+        "Why the K–S test does not need histogram bins",
+        "The empirical cumulative distribution Fₙ(x) is the fraction of observations ≤x. The Kolmogorov–Smirnov statistic D=supₓ|Fₙ(x)−F₀(x)| records the largest vertical gap between this step function and the proposed continuous CDF. Sorting observations lets you evaluate gaps just before and after each jump; the maximum of these candidates equals the full sup distance."
+      ],
+      [
+        "Compute both sides of each jump",
+        "At ordered x(i), compute D⁺ᵢ=i/n−F₀(x(i)) and D⁻ᵢ=F₀(x(i))−(i−1)/n, then take the largest nonnegative value across i. A student mistake is checking only Fₙ(x(i)) after the jump and missing a larger before-jump distance. K–S is distribution-free under a continuous fully specified null, subject to independence and the usual sampling assumptions."
+      ],
+      [
+        "Estimated parameters change critical values",
+        "If the mean/variance or other parameters are estimated from the very same data, the ordinary fully specified K–S critical values are generally not valid; a fitted-null calibration such as an appropriate Lilliefors method or parametric bootstrap may be required. K–S is not universally sensitive in the tails, so compare critical tail risks with domain knowledge and complementary plots."
+      ]
+    ],
+    "steps": [
+      "Specify a continuous candidate CDF F₀, including whether its parameters were fitted.",
+      "Sort n observations and evaluate F₀ at each ordered observation.",
+      "Compute both D⁺ and D⁻ and take their maximum.",
+      "Choose a critical value or p-value calibrated to the way F₀ was specified or fitted."
+    ],
+    "decision": "CDF comparison without bins → K–S distance; if parameters were estimated, check calibrated critical values.",
+    "recall": [
+      "What is the K–S statistic geometrically?",
+      "Why check immediately before and immediately after each ECDF jump?",
+      "What goes wrong using standard K–S critical values after fitting μ and σ from the sample?"
+    ],
+    "challenge": [
+      "For n=2 sorted observations, F₀(x₁)=0.20 and F₀(x₂)=0.75. Find D⁺, D⁻ and D.",
+      "D⁺: 0.5−0.20=0.30, 1−0.75=0.25. D⁻: 0.20−0=0.20, 0.75−0.5=0.25. Thus D=0.30. Calibration depends on whether F₀ was specified or fitted."
+    ]
+  },
+  "mom": {
+    "goal": "Derive method-of-moments estimators from expectations and identify when an estimator is physically inadmissible or statistically inefficient.",
+    "explore": [
+      [
+        "Moments are distribution fingerprints",
+        "A moment is an expected power (or other specified function) of a random variable. The first raw moment E[X] is the population mean; E[X²] is the second raw moment. Sample counterparts m₁=(1/n)Σxᵢ and m₂=(1/n)Σxᵢ² replace unknown expectations. The method of moments (MoM) sets as many theoretically derived moment equations equal to sample moments as there are unknown parameters, then solves the resulting system."
+      ],
+      [
+        "A normal example",
+        "For a normal model, theoretical E[X]=μ and E[X²]=μ²+σ². Equating to m₁ and m₂ gives μ̂MoM=m₁ and σ̂²MoM=m₂−m₁²=(1/n)Σ(xᵢ−x̄)². This variance estimator uses n, which differs from the conventional unbiased sample variance based on n−1. That distinction is a common exam trap."
+      ],
+      [
+        "Why moments are not always the best estimator",
+        "MoM is often easy to derive, but can be less efficient than maximum likelihood or can yield estimates outside the parameter space. Check whether the moment equations have a unique valid solution and whether the sample is representative. Asymptotic performance and small-sample bias are separate properties; do not equate simplicity with optimality."
+      ]
+    ],
+    "steps": [
+      "Write the model with its unknown parameters θ.",
+      "Derive one or more theoretical moments Eθ[Xᵏ].",
+      "Compute matching empirical moments from the sample and equate them to population moments.",
+      "Solve for θ, check support/parameter constraints, and verify estimated units/physical realism."
+    ],
+    "decision": "Given a distribution family and asked for a quick estimator via mean/variance → match model moments to sample moments.",
+    "recall": [
+      "Which moments match which unknown parameters?",
+      "Why does normal MoM variance divide by n, not n−1?",
+      "What should you check after solving MoM equations?"
+    ],
+    "challenge": [
+      "For iid exponential X with rate λ, derive the MoM estimate using E[X]=1/λ and sample mean x̄=4 h.",
+      "Set 1/λ̂=x̄=4 hours, so λ̂=1/4=0.25 h⁻¹. The reciprocal of a time has units of inverse time."
+    ]
+  },
+  "mle": {
+    "goal": "Set up a likelihood, use the log-likelihood safely, derive a maximum-likelihood estimate, and check support and boundary conditions.",
+    "explore": [
+      [
+        "What a likelihood means",
+        "A likelihood is the joint probability mass/density of the observed data viewed as a function of an unknown parameter. It is not a probability distribution over the parameter. Under independent observations, L(θ)=∏f(xᵢ|θ). Multiplying many small densities is inconvenient, so take ℓ(θ)=ln L(θ)=Σln f(xᵢ|θ). The maximizing θ is unchanged because logarithm is strictly increasing."
+      ],
+      [
+        "Derive the exponential MLE rather than memorize it",
+        "For iid exponential lifetimes with rate λ>0, f(x|λ)=λe^(−λx), x≥0. The log-likelihood is ℓ(λ)=n ln λ−λΣxᵢ. Differentiate: dℓ/dλ=n/λ−Σxᵢ. Setting this to zero gives λ̂=n/Σxᵢ=1/x̄, and d²ℓ/dλ²=−n/λ²<0 confirms an interior maximum."
+      ],
+      [
+        "Why first-order conditions are not enough",
+        "A derivative equal to zero can identify a minimum, saddle point, or inadmissible parameter. Check model support and the valid parameter domain, compare boundary points when applicable, and inspect whether the likelihood has a maximum. For multiparameter models solve a system or use numerical optimization. MLE estimates can be biased in small samples, despite desirable large-sample properties under suitable regularity conditions."
+      ]
+    ],
+    "steps": [
+      "Write the joint likelihood for the observed sample and specify parameter constraints.",
+      "Take logs and simplify products into sums, retaining data-independent terms only when harmless.",
+      "Differentiate or optimize, solve score equations, then verify maximum and boundaries.",
+      "Interpret θ̂ in original units, check physical plausibility and whether model assumptions are reasonable."
+    ],
+    "decision": "Asked for parameter values that make the observed sample most supported under the model → maximize likelihood.",
+    "recall": [
+      "Why can a sum of logs replace a product of densities?",
+      "What does the exponential rate λ̂=1/x̄ physically mean?",
+      "Why inspect domain boundaries after setting the score to zero?"
+    ],
+    "challenge": [
+      "Lifetimes are 2, 4, 6, 8 h, modeled as independent exponential observations. Derive λ̂ and the estimated mean lifetime.",
+      "n=4, Σx=20 h. Score n/λ−Σx=0 gives λ̂=4/20=0.2 h⁻¹. Estimated mean life=1/λ̂=5 h. Check all observations satisfy x≥0."
+    ]
+  },
+  "bayes_est": {
+    "goal": "Apply Bayes theorem to parameter learning, identify prior/likelihood/posterior roles, and distinguish posterior mean and posterior mode.",
+    "explore": [
+      [
+        "Turning data into updated uncertainty",
+        "Frequentist estimation usually treats a parameter as fixed and unknown. Bayesian estimation represents uncertainty about θ by a prior distribution p(θ). After observing data x, posterior p(θ|x)∝p(x|θ)p(θ). The normalizing constant is the marginal likelihood ∫p(x|θ)p(θ)dθ; it ensures the posterior integrates to one. State whether probabilities apply to a parameter or to an observable."
+      ],
+      [
+        "A conjugate example with a success probability",
+        "Suppose θ is a probability of passing a quality check, prior θ~Beta(a,b). After s successes and f failures from conditionally independent Bernoulli trials, the posterior is Beta(a+s,b+f). Posterior mean is (a+s)/(a+b+s+f). The MAP (posterior mode) differs, when the updated shape parameters exceed one: (a+s−1)/(a+b+s+f−2)."
+      ],
+      [
+        "Why prior assumptions matter",
+        "A prior captures modeling assumptions or earlier evidence. For small samples the prior may materially influence the posterior; for much more data, a regular identifiable model often becomes data-dominated. Be explicit about what was assumed and avoid claiming a posterior probability is a universal objective frequency. Decision-making may need a posterior credible interval and loss function, not just one point estimate."
+      ]
+    ],
+    "steps": [
+      "Specify the observation model/likelihood and what θ represents.",
+      "Choose or identify a prior with support matching valid θ values.",
+      "Multiply likelihood by prior and normalize (or recognize a conjugate family).",
+      "Calculate the requested posterior summary and explain how the prior and evidence contribute."
+    ],
+    "decision": "Prior beliefs or earlier information + newly observed data → posterior; verify whether asked for mean, MAP, or credible interval.",
+    "recall": [
+      "What is the difference between a likelihood and a posterior?",
+      "Is the posterior mean necessarily the same as the MAP?",
+      "How can you test whether the prior is dominating a small dataset?"
+    ],
+    "challenge": [
+      "A failure probability q has prior Beta(2,8). Four failures occur among 20 independent trials. Find the posterior and its mean.",
+      "Posterior q|data~Beta(2+4,8+16)=Beta(6,24). Posterior mean=6/30=0.20; prior mean=2/10=0.20. Same mean here does not imply the same uncertainty."
+    ]
+  },
+  "ci_z": {
+    "goal": "Interpret a confidence interval correctly, calculate a z interval with known population sigma, and connect width to confidence and sample size.",
+    "explore": [
+      [
+        "What confidence does—and does not—mean",
+        "A frequentist 95% confidence procedure produces intervals that contain the fixed true parameter on about 95% of hypothetical repetitions under its assumptions. Once an interval is computed, the parameter is fixed and the observed endpoints are fixed; it is not usually correct to assign a 95% probability to μ lying inside that specific interval. Express the inferential procedure and assumptions, not a false posterior probability."
+      ],
+      [
+        "Derive from the sampling distribution",
+        "If the sample mean has exact/approximate Normal distribution with mean μ and standard error σ/√n, then Z=(x̄−μ)/(σ/√n). Set −z_(1−α/2)≤Z≤z_(1−α/2), rearrange for μ, and obtain x̄±z_(1−α/2)σ/√n. For 95% confidence, the familiar z critical value is about 1.96."
+      ],
+      [
+        "Why a larger sample tightens the interval",
+        "Holding σ and confidence fixed, the margin of error is proportional to 1/√n. Halving margin requires roughly quadrupling n. Increasing the confidence level increases z and therefore widens the interval. The known-σ assumption is unusual in some field settings; if σ is estimated using a small sample from a normal population, consider Student t instead."
+      ]
+    ],
+    "steps": [
+      "Identify whether the target is μ, whether σ is known, and whether normal/CLT assumptions hold.",
+      "Find the right confidence level, α, and two-sided z critical value.",
+      "Calculate standard error σ/√n and margin zσ/√n.",
+      "Report (x̄−margin, x̄+margin) with units and a repeated-sampling interpretation."
+    ],
+    "decision": "Estimate a population mean with known σ and a two-sided confidence level → z interval; otherwise check t or another method.",
+    "recall": [
+      "What repeats in repeated-sampling coverage: μ or the interval endpoints?",
+      "What happens to the margin if n increases by a factor of four?",
+      "Why is z₀.₉₇₅≈1.96 used for a two-sided 95% interval?"
+    ],
+    "challenge": [
+      "n=64, x̄=50 kN, known σ=8 kN. Find a two-sided 95% confidence interval.",
+      "SE=8/8=1 kN; margin=1.96 kN; interval=(48.04,51.96) kN. Interpretation: the construction procedure targets 95% coverage."
+    ]
+  },
+  "ci_one": {
+    "goal": "Choose conservative upper/lower mean bounds using the engineering consequence, and use one-sided rather than two-sided critical values.",
+    "explore": [
+      [
+        "The direction is a safety decision",
+        "If a lower bound on material strength is needed, the adverse event is strength being less than assumed, so use L=x̄−z_(1−α)σ/√n. If an upper bound on an applied load is needed, use U=x̄+z_(1−α)σ/√n. Name the protected variable before choosing the sign; memorizing plus/minus without context can reverse the safety decision."
+      ],
+      [
+        "Why the critical value is different",
+        "A two-sided interval allocates α/2 in each tail; a one-sided lower or upper confidence bound allocates all α in only one tail. Thus 95% one-sided normal confidence uses z₀.₉₅≈1.645, not 1.96. Both are valid for different inferential questions. A one-sided interval extends indefinitely in the unbounded direction when written as an interval."
+      ],
+      [
+        "Do not confuse confidence bounds with population quantiles",
+        "A confidence bound on the population mean is NOT automatically a conservative bound on individual future observations or a tolerance bound covering a specified proportion of the population. The latter requires a different procedure. This difference is critical in structural reliability and quality control."
+      ]
+    ],
+    "steps": [
+      "Define engineering risk: low resistance or high load?",
+      "State the population parameter being bounded and confidence level.",
+      "Use lower L=x̄−z_(1−α)SE for strength or upper U=x̄+z_(1−α)SE for demand.",
+      "Check sign, units, assumptions, and explain that the bound applies to mean μ, not every unit."
+    ],
+    "decision": "A one-sided question starts from the dangerous direction; determine direction before taking a critical value.",
+    "recall": [
+      "Which bound protects against overestimated resistance?",
+      "Why does one-sided 95% use 1.645 and two-sided 95% use 1.96?",
+      "Does a confidence lower bound for mean resistance ensure every bolt exceeds that limit?"
+    ],
+    "challenge": [
+      "x̄R=110 MPa, known σR=12 MPa, n=36. Find the 95% one-sided lower bound for mean resistance.",
+      "SE=12/6=2 MPa; L=110−1.645×2=106.71 MPa. This bounds the population mean, not individual resistances."
+    ]
+  },
+  "ci_t": {
+    "goal": "Derive and use the Student t interval for an unknown population standard deviation and understand the role of degrees of freedom.",
+    "explore": [
+      [
+        "Why replacing sigma changes the reference distribution",
+        "When population σ is unknown, using the sample standard deviation s introduces extra uncertainty. For independent data from a normal population, T=(x̄−μ)/(s/√n) has Student t distribution with ν=n−1 degrees of freedom. The t tails are heavier than standard normal, especially for small n, reflecting uncertainty about scale."
+      ],
+      [
+        "Build the interval from t",
+        "The central t probability P(−t_(1−α/2,ν)≤T≤t_(1−α/2,ν))=1−α yields x̄±t_(1−α/2,ν)s/√n. Degrees of freedom are ν=n−1 for a one-sample mean, not n. As n grows, t critical values approach z critical values."
+      ],
+      [
+        "Assumptions and common misuse",
+        "The exact t result assumes iid normal observations. With substantial outliers or severe skew in a tiny sample, the t interval may have poor coverage. If samples are paired, dependent, censored, or stratified, do not automatically apply the independent one-sample formula. A t interval estimates a mean, not a standard deviation or an individual prediction interval."
+      ]
+    ],
+    "steps": [
+      "Confirm the target is mean μ, σ is unknown, and assumptions permit one-sample t.",
+      "Compute x̄, sample s (n−1 denominator), n, and ν=n−1.",
+      "Lookup t_(1−α/2,ν); calculate margin t×s/√n.",
+      "Give the interval in original units and interpret its repeated-sampling coverage."
+    ],
+    "decision": "Small or moderate normal sample, unknown population σ, inference about μ → Student t interval.",
+    "recall": [
+      "Why is the t multiplier often larger than z for small samples?",
+      "What degrees of freedom correspond to n=12 independent observations?",
+      "Does the t interval predict an individual future observation?"
+    ],
+    "challenge": [
+      "n=10, x̄=40 mm, s=6 mm, t₀.₉₇₅,₉≈2.262. Form a two-sided 95% CI.",
+      "SE=6/√10≈1.897 mm; margin≈2.262×1.897=4.292 mm; CI≈(35.71,44.29) mm."
+    ]
+  },
+  "sample_size": {
+    "goal": "Solve for required sample size from a desired margin of error, round conservatively, and identify the inputs that drive cost.",
+    "explore": [
+      [
+        "Why n grows like precision squared",
+        "For a two-sided z confidence interval for mean with known σ, the margin is E=z_(1−α/2)σ/√n. Rearrange to n≥(zσ/E)². Precision is expensive: if you need half the error margin, sample size becomes four times larger, all else equal. Confidence requirements and process variability also affect sample size quadratically."
+      ],
+      [
+        "A planning sigma is itself an estimate",
+        "The formula requires a reasonable planning value for σ; use previous studies, a pilot sample, or conservative upper bounds. An underestimated σ results in a sample too small for the planned precision. If measuring is costly or the process changes, the simplest iid formula can be misleading."
+      ],
+      [
+        "Always round up and revisit assumptions",
+        "Even if the computed value is n=34.1, choose at least 35 independent observations. Rounding to 34 violates the planned inequality. For finite populations, design effects, dependent samples, or sampling without replacement, use suitable corrections; a general textbook calculation is not universally valid."
+      ]
+    ],
+    "steps": [
+      "Choose what parameter is estimated and the desired total/half-width precision E.",
+      "Specify confidence level and z critical value, and a justified planning σ.",
+      "Compute (zσ/E)² with consistent units; round UP to an integer.",
+      "Check feasibility, independent sampling, and whether any design effects require a larger sample."
+    ],
+    "decision": "Asked “how many observations to achieve ±E?” → invert the interval margin before collecting data.",
+    "recall": [
+      "What happens to n if E is cut in half?",
+      "Why must n be rounded up even from 34.01?",
+      "Where can a planning σ come from?"
+    ],
+    "challenge": [
+      "You want a 95% CI half-width ≤2 MPa with planned σ=10 MPa. Calculate minimum n.",
+      "n≥(1.96×10/2)²=96.04; choose n=97 observations (round up), assuming the planning conditions apply."
+    ]
+  },
+  "variance_ci": {
+    "goal": "Use the chi-square distribution of sample variance for normal data, construct an asymmetric confidence interval for σ², and convert it into a standard-deviation interval.",
+    "explore": [
+      [
+        "Why a chi-square variable appears",
+        "For an independent sample from a normal population, (n−1)s²/σ² has a chi-square distribution with ν=n−1 degrees of freedom. The chi-square distribution is nonnegative and skewed (especially for small ν), so an interval for σ² will not be symmetric around s². The normality assumption is essential for the exact textbook procedure."
+      ],
+      [
+        "Invert the chi-square inequalities",
+        "For confidence 1−α, use χ²_(α/2,ν) and χ²_(1−α/2,ν), with critical values defined as cumulative left-tail quantiles. Rearranging gives lower variance bound (n−1)s²/χ²_(1−α/2,ν), upper bound (n−1)s²/χ²_(α/2,ν). It is easy to accidentally reverse the quantiles."
+      ],
+      [
+        "Separate fit-test chi-square from variance chi-square",
+        "The same symbol χ² appears in two different settings: grouped goodness-of-fit uses Σ(O−E)²/E with df depending on bins and fitted parameters, while this variance interval uses (n−1)s²/σ² with df=n−1 under normality. They are not interchangeable procedures. Take positive square roots of variance bounds if the question asks for σ rather than σ²."
+      ]
+    ],
+    "steps": [
+      "Verify independent normal observations, sample variance s², and ν=n−1.",
+      "Obtain left-tail χ² critical quantiles for α/2 and 1−α/2.",
+      "Place the LARGER quantile in the denominator of the LOWER variance bound.",
+      "Report σ² bounds in squared units; sqrt each endpoint if reporting σ bounds."
+    ],
+    "decision": "Confidence interval for population variance/SD under normality → chi-square variance pivot, not chi-square goodness-of-fit.",
+    "recall": [
+      "Why is the interval usually asymmetric?",
+      "Which denominator goes with the LOWER variance limit?",
+      "Why can normality matter much more for the variance interval than for large-sample mean inference?"
+    ],
+    "challenge": [
+      "n=11, s²=25 MPa², 95% χ²_(0.025,10)=3.247, χ²_(0.975,10)=20.483. Find a 95% variance CI.",
+      "ν=10, numerator νs²=250 MPa². Lower=250/20.483≈12.20 MPa²; upper=250/3.247≈77.00 MPa². For σ, sqrt gives about (3.49, 8.78) MPa."
+    ]
+  }
+}
