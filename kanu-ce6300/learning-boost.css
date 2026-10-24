@@ -60,3 +60,7 @@ body.dark .exam-bridge .exam-trap{background:#473527;color:#fbe5d7}
 .reader-deep-toggle:focus-visible{outline:2px solid #9d8fe2;outline-offset:-3px}
 .reader-deep-caption{margin:0!important;padding:0 18px 8px;font-size:12px;line-height:1.55;color:var(--muted,#716c82)}
 .reader-article.learning-enhanced:not(.advanced-open)>.reader-section.learning-advanced{display:none}
+
+.exam-bridge .exam-selftest{margin:14px 0;padding:14px;border:1px solid #bde6da;border-radius:13px;background:#fff}
+.exam-bridge .exam-selftest>p{font-weight:600;margin:9px 0 10px}
+body.dark .exam-bridge .exam-selftest{background:#34334c;color:#eee;border-color:#57516b}

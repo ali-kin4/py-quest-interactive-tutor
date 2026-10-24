@@ -31,7 +31,7 @@
       <div class="exam-trigger"><strong>... use this reasoning pattern</strong><p>${esc(d.do)}</p></div>
       <div class="learn-memory">💡 ${esc(d.memory)}</div>
       <div class="exam-trap"><strong>Common exam trap:</strong> ${esc(d.trap)}</div>
-      <details><summary>🎯 Two-minute closed-book self-test</summary><p><strong>Question:</strong> ${esc(d.test[0])}</p><p><strong>Reasoning:</strong> ${esc(d.test[1])}</p></details>
+      <div class="exam-selftest"><strong>🎯 Two-minute closed-book self-test</strong><p>${esc(d.test[0])}</p><details><summary>Reveal reasoning only after answering</summary><p>${esc(d.test[1])}</p></details></div>
       <p class="exam-small" style="margin:17px 0 5px">SIMPLE RETRIEVAL SCHEDULE — NO RE-READING FIRST</p>
       <div class="exam-reminder"><div><span>Tomorrow</span>Explain the method from memory in 60 seconds.</div><div><span>After 3 days</span>Classify and solve a fresh question without notes.</div><div><span>After 7 days</span>Mix this topic with neighboring methods in a short exam drill.</div></div>
       <p style="font-size:12px">If a step is missed, correct it immediately and retry sooner. These are suggested intervals, not a guaranteed optimal schedule.</p>
